@@ -1,0 +1,190 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Artisanal Warmth design system (stitch_coffee_shop_ordering_ui/artisanal_warmth/DESIGN.md).
+ * The desktop and mobile mockups drifted apart (pure black vs espresso buttons,
+ * sans vs serif UI text). These tokens are the single source both layouts share.
+ */
+@theme inline {
+  --font-sans: var(--font-jakarta);
+  --font-serif: var(--font-playfair);
+  --font-heading: var(--font-playfair);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* shadcn semantic tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* brand palette */
+  --color-espresso: #241611;
+  --color-espresso-soft: #3a2a23;
+  --color-amber: #8d4f06;
+  --color-amber-bright: #c47c35;
+  --color-amber-soft: #ffdcc1;
+  --color-amber-glow: #feac61;
+  --color-forest: #3a5a40;
+  --color-forest-soft: #dcefdd;
+  --color-milk: #fef8f4;
+  --color-oat-light: #f8f3ef;
+  --color-oat: #f2ede9;
+  --color-oat-deep: #ece7e3;
+  --color-oat-deeper: #e6e2de;
+  --color-ink: #1d1b19;
+  --color-ink-soft: #4f4541;
+  --color-ink-mute: #817471;
+  --color-danger: #ba1a1a;
+  --color-danger-soft: #ffdad6;
+
+  /* type scale */
+  --text-display: 56px;
+  --text-display--line-height: 64px;
+  --text-display--letter-spacing: -0.02em;
+  --text-display-sm: 38px;
+  --text-display-sm--line-height: 44px;
+  --text-display-sm--letter-spacing: -0.015em;
+  --text-headline-lg: 40px;
+  --text-headline-lg--line-height: 48px;
+  --text-headline-lg--letter-spacing: -0.01em;
+  --text-headline-lg-sm: 30px;
+  --text-headline-lg-sm--line-height: 36px;
+  --text-headline-md: 28px;
+  --text-headline-md--line-height: 36px;
+  --text-headline-sm: 22px;
+  --text-headline-sm--line-height: 28px;
+  --text-title-lg: 18px;
+  --text-title-lg--line-height: 24px;
+  --text-title-lg--letter-spacing: -0.01em;
+  --text-title-md: 16px;
+  --text-title-md--line-height: 22px;
+  --text-body-lg: 17px;
+  --text-body-lg--line-height: 26px;
+  --text-body-md: 15px;
+  --text-body-md--line-height: 22px;
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 18px;
+  --text-label-lg: 14px;
+  --text-label-lg--line-height: 18px;
+  --text-label-lg--letter-spacing: 0.01em;
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.04em;
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 14px;
+  --text-label-sm--letter-spacing: 0.06em;
+
+  --shadow-warm: 0 4px 16px rgba(36, 22, 17, 0.06);
+  --shadow-warm-lg: 0 8px 32px rgba(36, 22, 17, 0.12);
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 3);
+  --radius-4xl: calc(var(--radius) * 4);
+}
+
+:root {
+  --radius: 0.5rem;
+  --background: #fef8f4;
+  --foreground: #1d1b19;
+  --card: #ffffff;
+  --card-foreground: #1d1b19;
+  --popover: #ffffff;
+  --popover-foreground: #1d1b19;
+  --primary: #241611;
+  --primary-foreground: #fef8f4;
+  --secondary: #f2ede9;
+  --secondary-foreground: #241611;
+  --muted: #f2ede9;
+  --muted-foreground: #4f4541;
+  --accent: #ffdcc1;
+  --accent-foreground: #2e1500;
+  --destructive: #ba1a1a;
+  --border: rgba(36, 22, 17, 0.1);
+  --input: rgba(36, 22, 17, 0.14);
+  --ring: #c47c35;
+  --chart-1: #8d4f06;
+  --chart-2: #c47c35;
+  --chart-3: #3a5a40;
+  --chart-4: #feac61;
+  --chart-5: #241611;
+  --sidebar: #f8f3ef;
+  --sidebar-foreground: #1d1b19;
+  --sidebar-primary: #241611;
+  --sidebar-primary-foreground: #fef8f4;
+  --sidebar-accent: #ece7e3;
+  --sidebar-accent-foreground: #241611;
+  --sidebar-border: rgba(36, 22, 17, 0.08);
+  --sidebar-ring: #c47c35;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  ::selection {
+    background: var(--color-amber-soft);
+    color: #2e1500;
+  }
+}
+
+@utility eyebrow {
+  font-size: var(--text-label-sm);
+  line-height: var(--text-label-sm--line-height);
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-amber);
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
