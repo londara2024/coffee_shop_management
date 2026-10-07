@@ -19,7 +19,6 @@ import {
   Printer,
   Repeat,
   Send,
-  Store,
   ShieldAlert,
   Undo2,
   Users,
@@ -53,64 +52,64 @@ const initial: Ticket[] = [
   {
     id: "ACR-8942",
     guest: "Elena Rostova",
-    where: "In-Store Tasting Room • Table 04",
-    channel: "Priority Express",
+    where: "បន្ទប់ភ្លក្សរសជាតិក្នុងហាង • តុ 04",
+    channel: "អាទិភាពរហ័ស",
     status: "brewing",
     elapsed: 222,
     slaMin: 6,
     items: [
-      { qty: 1, name: "Honey Cinnamon Oat Latte", station: "Bar A", notes: ["12oz Ceramic, Steamed Hot 145°F", "Minor Figures Barista Oat Milk", "Double Ristretto Shot (Aura Seasonal Blend)", "Ceylon Cinnamon Dusting + Extra Wildflower Honey"] },
-      { qty: 1, name: "Avocado Tartine", station: "Hearth", notes: ["Country Sourdough, Jammy Egg, Maldon Salt, Chili Flakes"] },
-      { qty: 1, name: "Basque Burnt Cheesecake", station: "Bakery", notes: ["Chilled slice, Meyer Lemon preserve accent"] },
+      { qty: 1, name: "Honey Cinnamon Oat Latte", station: "Bar A", notes: ["ពែងសេរ៉ាមិច 12oz ចំហុយក្តៅ 145°F", "Minor Figures Barista Oat Milk", "បាញ់ Ristretto ទ្វេដង (Aura Seasonal Blend)", "រោយម្សៅស៊ីណាមុន Ceylon + ទឹកឃ្មុំផ្កាព្រៃបន្ថែម"] },
+      { qty: 1, name: "Avocado Tartine", station: "Hearth", notes: ["នំបុ័ង Sourdough ជនបទ ស៊ុតទឹកកណ្ដាល អំបិល Maldon កំទេចម្ទេសក្រហម"] },
+      { qty: 1, name: "Basque Burnt Cheesecake", station: "Bakery", notes: ["ចំណិតត្រជាក់ លាបជាមួយផលិតផលកក់ក្រូចឆ្មារ Meyer"] },
     ],
-    flag: { tone: "neutral", text: "Eco guest preference: Low-Waste Eco Pack — skip stoppers & extra paper napkins." },
+    flag: { tone: "neutral", text: "ចំណង់ចំណូលចិត្តអតិថិជនអេកូ៖ កញ្ចប់អេកូកាត់បន្ថយសំណល់ — មិនប្រើគម្របឧបករណ៍ និងក្រដាសអត់ដៃបន្ថែម។" },
   },
   {
     id: "ACR-8943",
     guest: "Marcus Chen",
-    where: "Silver Polestar 2 • Hazard Lights",
-    channel: "Curbside Bay #3",
+    where: "Silver Polestar 2 • ភ្លើងសញ្ញាអាសន្ន",
+    channel: "ចំណតទទួលក្រៅរថយន្ត #3",
     status: "brewing",
     elapsed: 375,
     slaMin: 5,
     items: [
-      { qty: 2, name: "Brown Sugar Oat Shaken Espresso", station: "Bar A", notes: ["Quad shots, Blonde Roast, hand-shaken with organic brown sugar", "Organic Oat Milk, topped with cinnamon sprinkle", "16oz Cold Cups with compostable sip lids"] },
-      { qty: 1, name: "Cardamom Morning Bun", station: "Hearth", notes: ["Warm Hearth Toasting (30s) • Sealed pastry bag"] },
+      { qty: 2, name: "Brown Sugar Oat Shaken Espresso", station: "Bar A", notes: ["4 បាញ់ Blonde Roast កូរដោយដៃជាមួយស្ករត្នោតសរីរាង្គ", "ទឹកដោះគោអូតសរីរាង្គ រោយម្សៅស៊ីណាមុនខាងលើ", "កែវត្រជាក់ 16oz ជាមួយគម្របផឹករលាយបាន"] },
+      { qty: 1, name: "Cardamom Morning Bun", station: "Hearth", notes: ["ដុតក្តៅក្នុងឡ Hearth (30s) • វេចក្នុងថង់នំបិទជិត"] },
     ],
-    flag: { tone: "amber", text: "Guest arrived at stall 3 min ago. Drink staging in progress." },
+    flag: { tone: "amber", text: "អតិថិជនបានមកដល់ចំណត 3 នាទីមុន។ កំពុងរៀបចំភេសជ្ជៈ។" },
   },
   {
     id: "ACR-8944",
     guest: "Sophia Vance",
-    where: "Order placed via App Barista Bar",
-    channel: "Counter Pickup",
+    where: "បញ្ជាទិញតាមរយៈ App Barista Bar",
+    channel: "ទទួលនៅកន្លែងបញ្ជរ",
     status: "new",
     elapsed: 65,
     slaMin: 8,
     items: [
-      { qty: 1, name: "Ethiopian Yirgacheffe Pour Over", station: "Bar B", notes: ["Extraction Method: Chemex 3-Cup Classic", "Bean Origin: Washed Gedeo Zone, 2,100m", "Tasting notes: White Jasmine, Peach Nectar, Bergamot"] },
-      { qty: 1, name: "Açaí Protein Botanical Blast", station: "Cold Lab", notes: ["22g Pea Protein, Wild Blueberries, Coconut Water, Hemp Seeds"] },
+      { qty: 1, name: "Ethiopian Yirgacheffe Pour Over", station: "Bar B", notes: ["វិធីស្រង់៖ Chemex 3-Cup Classic", "ប្រភពគ្រាប់៖ Washed Gedeo Zone, 2,100m", "កំណត់ចំណាំរសជាតិ៖ White Jasmine, Peach Nectar, Bergamot"] },
+      { qty: 1, name: "Açaí Protein Botanical Blast", station: "Cold Lab", notes: ["ប្រូតេអ៊ីនសណ្ដែក 22g ផ្លែប៊្លូបឺរីព្រៃ ទឹកដូង គ្រាប់ Hemp"] },
     ],
-    flag: { tone: "neutral", text: "Chemex blooming station currently vacant. Fast-track ready." },
+    flag: { tone: "neutral", text: "កន្លែងព្រុះកាហ្វេ Chemex កំពុងទំនេរ។ អាចរួចរាល់លឿន។" },
   },
   {
     id: "ACR-8945",
     guest: "David Kim",
-    where: "Scheduled for 8:15 AM (in ~12 mins)",
-    channel: "Scheduled Order",
+    where: "កំណត់ពេលម៉ោង 8:15 AM (ក្នុងប្រមាណ 12 នាទីទៀត)",
+    channel: "ការកម្ម៉ង់តាមកាលវិភាគ",
     status: "scheduled",
     elapsed: 0,
     slaMin: 10,
     items: [
-      { qty: 1, name: "Ceremonial Matcha Botanical Fusion", station: "Tea Bar", notes: ["Uji First Harvest Ceremonial Grade", "Sweetened with raw agave nectar", "Steamed coconut oat blend, lavender drizzle"] },
-      { qty: 1, name: "Prosciutto & Gruyère Croissant", station: "Bakery", notes: ["Hearth warmed crisp before scheduled pickup"] },
+      { qty: 1, name: "Ceremonial Matcha Botanical Fusion", station: "Tea Bar", notes: ["ថ្នាក់ពិធីការ ច្រូតកាត់ដំបូង Uji", "ផ្អែមជាមួយទឹកអាហ្កាវីឆៅ", "លាយទឹកដូង និងទឹកដោះគោអូតចំហុយ ស្រោចទឹកឡាវេនឌឺរ"] },
+      { qty: 1, name: "Prosciutto & Gruyère Croissant", station: "Bakery", notes: ["ដុតក្តៅឲ្យក្រូបនៅឡ Hearth មុនពេលដល់កាលកំណត់ទទួល"] },
     ],
   },
   {
     id: "ACR-8940",
     guest: "Liam Patel",
-    where: "Placed at Shelf Zone: Counter Bar A",
-    channel: "Ready on Shelf",
+    where: "ដាក់នៅតំបន់ធ្នើ៖ បញ្ជរ Bar A",
+    channel: "រួចរាល់នៅលើធ្នើ",
     status: "ready",
     elapsed: 240,
     slaMin: 6,
@@ -122,10 +121,10 @@ const initial: Ticket[] = [
 ]
 
 const filters: { id: "all" | Exclude<Status, "scheduled">; label: string }[] = [
-  { id: "all", label: "All Active" },
-  { id: "new", label: "New / In-Queue" },
-  { id: "brewing", label: "Handcrafting & Brewing" },
-  { id: "ready", label: "Ready for Pickup" },
+  { id: "all", label: "សកម្មទាំងអស់" },
+  { id: "new", label: "ថ្មី / កំពុងតម្រង់ជួរ" },
+  { id: "brewing", label: "កំពុងធ្វើ និងស្រង់" },
+  { id: "ready", label: "រួចរាល់សម្រាប់ទទួល" },
 ]
 const stationFilters = ["All Stations", "Espresso Bar A", "Pour-Over Bar B", "Hearth & Bakery"]
 const stationMatch: Record<string, Station[]> = {
@@ -134,11 +133,20 @@ const stationMatch: Record<string, Station[]> = {
   "Hearth & Bakery": ["Hearth", "Bakery"],
 }
 
+const stationLabel: Record<Station, string> = {
+  "Bar A": "បារ A",
+  "Bar B": "បារ B",
+  Hearth: "ឡដុត",
+  Bakery: "នំបុ័ង",
+  "Cold Lab": "ភេសជ្ជៈត្រជាក់",
+  "Tea Bar": "បារតែ",
+}
+
 const statusStyle: Record<Status, { bar: string; label: string }> = {
-  new: { bar: "bg-forest", label: "New" },
-  brewing: { bar: "bg-amber-bright", label: "Handcrafting" },
-  ready: { bar: "bg-forest", label: "Ready on Shelf" },
-  scheduled: { bar: "bg-oat-deeper", label: "Scheduled" },
+  new: { bar: "bg-forest", label: "ថ្មី" },
+  brewing: { bar: "bg-amber-bright", label: "កំពុងធ្វើ" },
+  ready: { bar: "bg-forest", label: "រួចរាល់នៅលើធ្នើ" },
+  scheduled: { bar: "bg-oat-deeper", label: "បានកំណត់ពេល" },
 }
 
 function mmss(s: number) {
@@ -148,7 +156,7 @@ function mmss(s: number) {
 export function KdsBoard() {
   const [tickets, setTickets] = useState(initial)
   const [filter, setFilter] = useState<"all" | Exclude<Status, "scheduled">>("all")
-  const [station, setStation] = useState(stationFilters[0])
+  const station = stationFilters[0]
   const [chime, setChime] = useState(true)
   const [processed, setProcessed] = useState(384)
 
@@ -187,46 +195,46 @@ export function KdsBoard() {
     if (t.status === "ready") {
       update(t.id, () => null)
       setProcessed((n) => n + 1)
-      toast.success(`#${t.id} completed & archived`)
+      toast.success(`#${t.id} បានបញ្ចប់ និងទុកក្នុងប័ណ្ណសារ`)
       return
     }
     const next: Status = t.status === "brewing" ? "ready" : "brewing"
     update(t.id, (x) => ({ ...x, status: next, items: next === "ready" ? x.items.map((i) => ({ ...i, done: true })) : x.items }))
-    toast(`#${t.id} → ${statusStyle[next].label}`, { description: chime ? "Chime played at pickup counter" : undefined })
+    toast(`#${t.id} → ${statusStyle[next].label}`, { description: chime ? "សំឡេងជូនដំណឹងបានលឺនៅកន្លែងទទួល" : undefined })
   }
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-5">
       <div className="flex flex-wrap items-center gap-2">
         <Badge className="h-8 gap-1.5 rounded-full bg-oat px-3 text-label-sm font-bold text-ink uppercase">
-          <span className="size-2 animate-pulse rounded-full bg-forest" /> Live Feed Synced • 2s ago
+          <span className="size-2 animate-pulse rounded-full bg-forest" /> ធ្វើសមកាលកម្មផ្ទាល់ • 2 វិនាទីមុន
         </Badge>
         <span className="flex items-center gap-1.5 text-body-sm text-ink-soft">
-          <Gauge className="size-4 text-amber" /> Roastery Load: <b className="text-title-md text-ink">Moderate</b>
-          <span className="rounded bg-amber-soft px-1.5 text-label-md font-semibold text-amber">Est. wait 8–10 mins</span>
+          <Gauge className="size-4 text-amber" /> បន្ទុកកន្លែងដុត៖ <b className="text-title-md text-ink">មធ្យម</b>
+          <span className="rounded bg-amber-soft px-1.5 text-label-md font-semibold text-amber">រង់ចាំប្រមាណ 8–10 នាទី</span>
         </span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <Label className="flex h-8 items-center gap-2 rounded-full bg-oat px-3 text-label-md font-semibold">
-            <Bell className="size-3.5 text-amber" /> Audio Chime
+            <Bell className="size-3.5 text-amber" /> សំឡេងជូនដំណឹង
             <Switch checked={chime} onCheckedChange={setChime} size="sm" className="data-checked:bg-amber" />
           </Label>
           <Button variant="secondary" size="sm" className="h-8 gap-1.5 rounded-full bg-oat">
-            <Pause className="size-3.5 text-amber" /> Station Throttle
+            <Pause className="size-3.5 text-amber" /> គ្រប់គ្រងល្បឿនស្ថានីយ៍
           </Button>
           <Button size="sm" className="h-8 gap-1.5 rounded-full hover:bg-amber">
-            <Printer className="size-3.5" /> Batch Routing Slip
+            <Printer className="size-3.5" /> បោះពុម្ពស្លីបជាបាច់
           </Button>
         </div>
       </div>
 
-      {/* Phones: status & station filters collapse into dropdowns so nothing runs off-screen */}
-      <div className="grid grid-cols-2 gap-2 rounded-2xl bg-oat-light p-2 ring-1 ring-espresso/5 md:hidden">
+      {/* Phones: status filter collapses into a dropdown so nothing runs off-screen */}
+      <div className="grid grid-cols-1 gap-2 rounded-2xl bg-oat-light p-2 ring-1 ring-espresso/5 md:hidden">
         <Select
           value={filter}
           items={Object.fromEntries(filters.map((f) => [f.id, `${f.label} (${counts[f.id]})`]))}
           onValueChange={(v) => v && setFilter(v as typeof filter)}
         >
-          <SelectTrigger aria-label="Ticket status" className="h-10 w-full rounded-xl border-0 bg-espresso px-3 text-label-md font-semibold text-milk [&_svg]:text-milk">
+          <SelectTrigger aria-label="ស្ថានភាពសំបុត្រ" className="h-10 w-full rounded-xl border-0 bg-espresso px-3 text-label-md font-semibold text-milk [&_svg]:text-milk">
             <ListFilter className="size-4" />
             <SelectValue />
           </SelectTrigger>
@@ -235,25 +243,6 @@ export function KdsBoard() {
               <SelectItem key={f.id} value={f.id} className="py-2">
                 <span className="flex-1">{f.label}</span>
                 <span className="rounded-full bg-oat-deeper px-1.5 text-label-sm text-ink-soft">{counts[f.id]}</span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={station} onValueChange={(v) => v && setStation(v as string)}>
-          <SelectTrigger
-            aria-label="Station"
-            className={cn(
-              "h-10 w-full rounded-xl border-0 px-3 text-label-md font-semibold",
-              station === stationFilters[0] ? "bg-white text-ink" : "bg-amber-soft text-amber"
-            )}
-          >
-            <Store className="size-4 text-amber" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {stationFilters.map((st) => (
-              <SelectItem key={st} value={st} className="py-2">
-                {st}
               </SelectItem>
             ))}
           </SelectContent>
@@ -276,31 +265,15 @@ export function KdsBoard() {
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none 2xl:ml-auto">
-          <span className="px-2 text-label-sm font-bold text-ink-soft uppercase">Station:</span>
-          {stationFilters.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setStation(s)}
-              className={cn(
-                "rounded-lg px-3 py-1.5 text-label-md font-semibold whitespace-nowrap",
-                station === s ? "bg-amber-soft text-amber" : "text-ink-soft hover:bg-oat"
-              )}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
       </div>
 
-      <section className="relative overflow-hidden rounded-3xl bg-oat-deep">
+      <section className="hidden relative overflow-hidden rounded-3xl bg-oat-deep">
         <div className="relative z-10 max-w-xl p-6 md:p-8">
-          <p className="eyebrow">● Aura KDS Engine • Production Feed</p>
-          <h1 className="mt-2 font-serif text-headline-lg-sm text-ink md:text-headline-lg">Master Roastery Production Queue</h1>
+          <p className="eyebrow">● Aura KDS Engine • លំហូរផលិតកម្ម</p>
+          <h1 className="mt-2 font-serif text-headline-lg-sm text-ink md:text-headline-lg">ជួរផលិតកម្មសំខាន់នៃកន្លែងដុតគ្រាប់</h1>
           <p className="mt-2 text-body-md text-ink-soft">
-            Tracking thermal profiles, single-origin pour overs, and stone-ground hearth bake times in real-time. Priority
-            routing is active for pickup bays and table service.
+            តាមដានប្រូហ្វាយកម្ដៅ ការស្រង់កាហ្វេប្រភពដើមតែមួយ និងពេលវេលាដុតនំកិនដោយថ្មតាមពេលវេលាជាក់ស្តែង។
+            ការតម្រង់ទិសអាទិភាពកំពុងដំណើរការសម្រាប់តំបន់ទទួល និងសេវាតុ។
           </p>
         </div>
         <div className="absolute inset-y-0 right-0 hidden w-2/5 md:block">
@@ -331,7 +304,7 @@ export function KdsBoard() {
                 <div className="flex flex-wrap items-center gap-1.5">
                   <Badge className="bg-amber-soft text-label-sm font-bold text-amber">{t.channel}</Badge>
                   <span className={cn("text-label-sm font-bold", over ? "text-danger" : "text-amber")}>
-                    {over ? `Over SLA (${t.slaMin}m target)` : statusStyle[t.status].label}
+                    {over ? `លើស SLA (គោលដៅ ${t.slaMin} នាទី)` : statusStyle[t.status].label}
                   </span>
                 </div>
                 <p className="mt-1 text-title-md text-ink">{t.guest}</p>
@@ -351,7 +324,7 @@ export function KdsBoard() {
                       )}
                       <p className={cn("flex-1 text-title-md text-ink", i.done && "line-through")}>{i.name}</p>
                       <span className="rounded bg-oat px-1.5 py-0.5 text-label-sm font-semibold text-ink-soft">
-                        {i.done ? "Done" : i.station}
+                        {i.done ? "រួចរាល់" : stationLabel[i.station]}
                       </span>
                     </div>
                     {i.notes.length && !i.done ? (
@@ -366,10 +339,10 @@ export function KdsBoard() {
                 {t.status === "ready" ? (
                   <li className="flex items-center justify-between rounded-2xl bg-white p-3">
                     <div>
-                      <p className="eyebrow text-ink-soft">Pickup Code</p>
+                      <p className="eyebrow text-ink-soft">កូដទទួល</p>
                       <p className="font-mono text-headline-sm tracking-widest text-ink">AUR-40P</p>
                     </div>
-                    <span className="text-label-sm text-ink-soft">SMS sent at 08:01</span>
+                    <span className="text-label-sm text-ink-soft">SMS បានផ្ញើនៅម៉ោង 08:01</span>
                   </li>
                 ) : null}
                 {t.flag ? (
@@ -389,37 +362,37 @@ export function KdsBoard() {
               <div className="mt-4 flex flex-col gap-2 border-t border-espresso/5 p-4">
                 {t.status === "scheduled" ? (
                   <>
-                    <Button variant="secondary" size="sm" className="h-8 w-full bg-white" onClick={() => toast("Postponed 5 minutes")}>
-                      Postpone +5m
+                    <Button variant="secondary" size="sm" className="h-8 w-full bg-white" onClick={() => toast("បានពន្យារពេល 5 នាទី")}>
+                      ពន្យារពេល +5 នាទី
                     </Button>
                     <Button
                       className="h-10 w-full gap-1.5 hover:bg-amber"
                       onClick={() => update(t.id, (x) => ({ ...x, status: "new", elapsed: 0 }))}
                     >
-                      <Play className="size-4" /> Release Now
+                      <Play className="size-4" /> ចេញផ្សាយឥឡូវនេះ
                     </Button>
                   </>
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
-                      <Button variant="secondary" size="icon-sm" className="size-8 shrink-0 bg-white" aria-label="Call guest">
+                      <Button variant="secondary" size="icon-sm" className="size-8 shrink-0 bg-white" aria-label="ហៅទូរស័ព្ទទៅភ្ញៀវ">
                         <Phone />
                       </Button>
                       <Button
                         variant="secondary"
                         size="sm"
                         className="h-8 flex-1 gap-1.5 bg-white"
-                        onClick={() => toast(t.status === "ready" ? "Pickup ping resent" : "Label sent to printer")}
+                        onClick={() => toast(t.status === "ready" ? "បានផ្ញើសារជូនដំណឹងទទួលម្ដងទៀត" : "ស្លាកត្រូវបានផ្ញើទៅម៉ាស៊ីនបោះពុម្ព")}
                       >
                         {t.status === "ready" ? <Send className="size-3.5" /> : <Printer className="size-3.5" />}
-                        {t.status === "ready" ? "Resend Ping" : "Print Label"}
+                        {t.status === "ready" ? "ផ្ញើសារជូនដំណឹងម្ដងទៀត" : "បោះពុម្ពស្លាក"}
                       </Button>
                       {t.status === "brewing" ? (
                         <Button
                           variant="secondary"
                           size="icon-sm"
                           className="size-8 shrink-0 bg-white"
-                          aria-label="Send back to queue"
+                          aria-label="ផ្ញើត្រឡប់ទៅជួរវិញ"
                           onClick={() => update(t.id, (x) => ({ ...x, status: "new" }))}
                         >
                           <Undo2 />
@@ -435,17 +408,17 @@ export function KdsBoard() {
                     >
                       {t.status === "new" && (
                         <>
-                          <Flame className="size-4" /> Start Brew
+                          <Flame className="size-4" /> ចាប់ផ្តើមស្រង់
                         </>
                       )}
                       {t.status === "brewing" && (
                         <>
-                          <BadgeCheck className="size-4" /> Mark Ready & Dispatch
+                          <BadgeCheck className="size-4" /> សម្គាល់ថារួចរាល់ និងបញ្ជូន
                         </>
                       )}
                       {t.status === "ready" && (
                         <>
-                          <Archive className="size-4" /> Complete & Archive
+                          <Archive className="size-4" /> បញ្ចប់ និងទុកក្នុងប័ណ្ណសារ
                         </>
                       )}
                     </Button>
@@ -456,10 +429,10 @@ export function KdsBoard() {
           )
         })}
 
-        <Panel className="flex flex-col gap-4">
+        <Panel className="hidden flex-col gap-4">
           <div>
-            <p className="eyebrow">Real-Time Metrics</p>
-            <h2 className="mt-0.5 text-title-lg text-ink">Station Heat & Extraction SLA</h2>
+            <p className="eyebrow">ម៉ែត្រិកពេលវេលាជាក់ស្តែង</p>
+            <h2 className="mt-0.5 text-title-lg text-ink">កម្ដៅស្ថានីយ៍ និង SLA ស្រង់</h2>
           </div>
           {[
             { name: "Espresso Bar A (La Marzocco Strada)", pct: 82, tone: "amber" as const },
@@ -469,19 +442,19 @@ export function KdsBoard() {
             <div key={s.name}>
               <div className="mb-1.5 flex justify-between text-label-md">
                 <span className="text-ink">{s.name}</span>
-                <span className="font-semibold text-amber tabular">{s.pct}% Cap</span>
+                <span className="font-semibold text-amber tabular">{s.pct}% សមត្ថភាព</span>
               </div>
               <Meter value={s.pct} tone={s.tone} />
             </div>
           ))}
           <div className="rounded-2xl bg-white p-3">
-            <p className="mb-2 text-label-md text-ink-soft">Quick Line Interventions</p>
+            <p className="mb-2 text-label-md text-ink-soft">អន្តរាគមន៍ជួរលឿន</p>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { icon: Pause, label: "Pause Mobile" },
-                { icon: Users, label: "Purge Group 2" },
-                { icon: ShieldAlert, label: "SLA Override" },
-                { icon: Repeat, label: "Order Recall" },
+                { icon: Pause, label: "ផ្អាកកម្មវិធីទូរស័ព្ទ" },
+                { icon: Users, label: "សម្អាតក្រុម 2" },
+                { icon: ShieldAlert, label: "បដិសេធ SLA" },
+                { icon: Repeat, label: "ហៅការកម្ម៉ង់ត្រឡប់" },
               ].map(({ icon: Icon, label }) => (
                 <Button key={label} variant="secondary" size="sm" className="gap-1.5 bg-oat" onClick={() => toast(label)}>
                   <Icon className="size-3.5 text-amber" /> {label}
@@ -495,14 +468,14 @@ export function KdsBoard() {
       <div className="flex flex-col gap-3 rounded-3xl bg-oat-light p-4 ring-1 ring-espresso/5 md:flex-row md:items-center">
         <BadgeCheck className="size-6 text-amber" />
         <div className="flex-1">
-          <p className="text-title-md text-ink">All Station Profiles Balanced</p>
+          <p className="text-title-md text-ink">ប្រូហ្វាយស្ថានីយ៍ទាំងអស់មានតុល្យភាព</p>
           <p className="text-body-sm text-ink-soft">
-            Average extraction turn-around: 4m 12s • Daily tickets processed: <b className="tabular">{processed}</b>
+            រយៈពេលស្រង់ជាមធ្យម៖ 4m 12s • សំបុត្របានដំណើរការប្រចាំថ្ងៃ៖ <b className="tabular">{processed}</b>
           </p>
         </div>
-        <span className="text-label-md text-ink-soft">Barista Shift Lead: Mateo Silva</span>
+        <span className="text-label-md text-ink-soft">ប្រធានវេនបារីស្តា៖ Mateo Silva</span>
         <Button size="sm" className="hover:bg-amber">
-          End Shift Audit Report
+          របាយការណ៍ត្រួតពិនិត្យបញ្ចប់វេន
         </Button>
       </div>
     </div>

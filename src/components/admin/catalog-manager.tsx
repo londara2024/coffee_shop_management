@@ -4,12 +4,9 @@ import { useMemo, useState } from "react"
 import Image from "next/image"
 import {
   Camera,
-  ChevronRight,
   CirclePlus,
   Download,
   Eye,
-  FileSpreadsheet,
-  NotebookPen,
   RefreshCw,
   RotateCcw,
   Search,
@@ -20,6 +17,7 @@ import { toast } from "sonner"
 
 import { AddItemSheet } from "@/components/admin/add-item-sheet"
 import { Panel } from "@/components/admin/blocks"
+import { ImportCatalogSheet } from "@/components/admin/import-catalog-sheet"
 import { Tag } from "@/components/shop/tag"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -31,41 +29,58 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { catalog, isCustom, useAllProducts, type CustomProduct } from "@/lib/catalog"
 import { categories, formatPrice, products, type CategoryId, type Product } from "@/lib/data"
 import { cn } from "@/lib/utils"
+import { defaultToppings as STANDARD_TOPPINGS } from "@/components/shop/product-configurator"
 
-type Row = { slug: string; price: number; live: boolean; cost: number }
-
-const modifierGroups = [
-  "Alternative Milks (Oat, Almond, Macadamia)",
-  "Sweetness Scale (0%, 25%, 50%, 100%)",
-  "Espresso Roast Swap (Decaf Sugarcane)",
-]
+type Row = {
+  slug: string
+  price: number
+  sizePrices?: [number, number, number]
+  toppings?: Product["toppings"]
+  live: boolean
+}
 
 export function CatalogManager() {
   const [rows, setRows] = useState<Record<string, Row>>(() =>
     Object.fromEntries(
-      products.map((p, i) => [p.slug, { slug: p.slug, price: p.price, live: p.slug !== "basque-burnt-cheesecake", cost: 16 + ((i * 7) % 14) + 0.4 }])
+      products.map((p) => [
+        p.slug,
+        { slug: p.slug, price: p.price, sizePrices: p.sizePrices, toppings: p.toppings, live: p.slug !== "basque-burnt-cheesecake" },
+      ])
     )
   )
   const [tab, setTab] = useState<CategoryId>("coffee")
   const [query, setQuery] = useState("")
-  const [status, setStatus] = useState("All (Active & 86'd)")
+  const [status, setStatus] = useState("ទាំងអស់ (កំពុងលក់ & ដកចេញ)")
   const [selected, setSelected] = useState<string | null>("honey-cinnamon-oat-latte")
-  const [draft, setDraft] = useState<{ price: string; live: boolean; mods: string[] } | null>({
-    price: "6.25",
+  const [draft, setDraft] = useState<{ size1: string; size2: string; size3: string; live: boolean; mods: string[] } | null>({
+    size1: "",
+    size2: "6.25",
+    size3: "",
     live: true,
-    mods: [...modifierGroups],
+    mods: [],
   })
   const [adding, setAdding] = useState(false)
   const [sheetKey, setSheetKey] = useState(0)
+  const [importing, setImporting] = useState(false)
   const all = useAllProducts()
 
   // Built-in items keep their state here; admin-created items persist theirs in the catalog store.
   const rowFor = (p: Product): Row =>
-    isCustom(p) ? { slug: p.slug, price: p.price, live: p.live, cost: 24.5 } : rows[p.slug]
+    isCustom(p) ? { slug: p.slug, price: p.price, sizePrices: p.sizePrices, toppings: p.toppings, live: p.live } : rows[p.slug]
 
-  function saveRow(p: Product, patch: Partial<Pick<Row, "price" | "live">>) {
+  function saveRow(p: Product, patch: Partial<Pick<Row, "price" | "sizePrices" | "toppings" | "live">>) {
     if (isCustom(p)) catalog.update(p.slug, patch)
     else setRows((r) => ({ ...r, [p.slug]: { ...r[p.slug], ...patch } }))
+  }
+
+  function draftFromRow(row: Row) {
+    return {
+      size1: row.sizePrices?.[0] ? row.sizePrices[0].toFixed(2) : "",
+      size2: row.price.toFixed(2),
+      size3: row.sizePrices?.[2] ? row.sizePrices[2].toFixed(2) : "",
+      live: row.live,
+      mods: row.toppings?.map((t) => t.id) ?? [],
+    }
   }
 
   function openAdd() {
@@ -76,15 +91,15 @@ export function CatalogManager() {
   function onCreated(item: CustomProduct) {
     setTab(item.category)
     setQuery("")
-    setStatus("All (Active & 86'd)")
+    setStatus("ទាំងអស់ (កំពុងលក់ & ដកចេញ)")
     setSelected(item.slug)
-    setDraft({ price: item.price.toFixed(2), live: item.live, mods: [...modifierGroups] })
+    setDraft(draftFromRow(rowFor(item)))
   }
 
   function removeItem(p: CustomProduct) {
     catalog.remove(p.slug)
     setSelected(null)
-    toast.success(`${p.name} removed from the menu`)
+    toast.success(`បានដក ${p.nameKm ?? p.name} ចេញពីម៉ឺនុយ`)
   }
 
   const list = useMemo(
@@ -94,7 +109,7 @@ export function CatalogManager() {
         return (
           p.category === tab &&
           p.name.toLowerCase().includes(query.toLowerCase()) &&
-          (status.startsWith("All") || (status === "Active" ? live : !live))
+          (status.startsWith("ទាំងអស់") || (status === "កំពុងលក់" ? live : !live))
         )
       }),
     [all, tab, query, status, rows]
@@ -105,20 +120,22 @@ export function CatalogManager() {
   function select(slug: string) {
     const p = all.find((x) => x.slug === slug)
     if (!p) return
-    const row = rowFor(p)
     setSelected(slug)
-    setDraft({ price: row.price.toFixed(2), live: row.live, mods: [...modifierGroups] })
+    setDraft(draftFromRow(rowFor(p)))
   }
 
   function push() {
     if (!current || !draft) return
-    const price = Number.parseFloat(draft.price)
+    const price = Number.parseFloat(draft.size2)
     if (!Number.isFinite(price) || price <= 0) {
-      toast.error("Enter a valid base price")
+      toast.error("សូមបញ្ចូលតម្លៃទំហំធម្មតាឲ្យត្រឹមត្រូវ")
       return
     }
-    saveRow(current, { price, live: draft.live })
-    toast.success(`${current.name} pushed to POS`, { description: `${formatPrice(price)} · ${draft.live ? "Live" : "86'd"}` })
+    const sizeNums: [number, number, number] = [Number(draft.size1) || 0, price, Number(draft.size3) || 0]
+    const sizePrices = sizeNums.some(Boolean) ? sizeNums : undefined
+    const toppings = draft.mods.length ? STANDARD_TOPPINGS.filter((t) => draft.mods.includes(t.id)) : undefined
+    saveRow(current, { price, sizePrices, toppings, live: draft.live })
+    toast.success(`បានផ្ញើ ${current.nameKm ?? current.name} ទៅកាន់ម៉ាស៊ីនគិតលុយ (POS)`, { description: `${formatPrice(price)} · ${draft.live ? "កំពុងបង្ហាញ" : "ដកចេញ"}` })
   }
 
   const liveCount = all.filter((p) => rowFor(p).live).length
@@ -126,38 +143,35 @@ export function CatalogManager() {
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6">
       <AddItemSheet key={sheetKey} open={adding} onOpenChange={setAdding} defaultCategory={tab} onCreated={onCreated} />
+      <ImportCatalogSheet open={importing} onOpenChange={setImporting} />
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <Panel className="flex flex-col gap-5">
           <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-end 2xl:justify-between">
             <div className="max-w-2xl">
               <p className="eyebrow">
-                Store Menu Operations • <span className="text-ink-soft normal-case tracking-normal">Active Barista POS & Online Store Sync</span>
+                ប្រតិបត្តិការម៉ឺនុយហាង • <span className="text-ink-soft normal-case tracking-normal">ធ្វើសមកាលកម្មជាមួយ POS បារិស្តា និងហាងអនឡាញ</span>
               </p>
               <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-oat px-2.5 py-0.5 text-label-md text-ink">
-                <span className="size-1.5 rounded-full bg-forest" /> Square POS API: Synchronized (2m ago)
+                <span className="size-1.5 rounded-full bg-forest" /> Square POS API៖ បានធ្វើសមកាលកម្ម (២នាទីមុន)
               </p>
               <h1 className="mt-3 font-serif text-headline-lg-sm text-ink md:text-headline-lg">
-                Artisanal Beverage &amp; Provisions Catalog
+                កាតាឡុកភេសជ្ជៈ និងម្ហូបអាហារ
               </h1>
               <p className="mt-2 text-body-md text-ink-soft">
-                Curate seasonal extractions, assign roast-batch flavor profiles, and monitor real-time kitchen inventory
-                states across downtown bar stations.
+                រៀបចំភេសជ្ជៈ កំណត់ទម្រង់រសជាតិតាមឡុតដុត និងតាមដានស្តុកសម្ភារៈផ្ទះបាយជាក់ស្តែង។
               </p>
             </div>
-            <Button className="h-10 w-fit gap-2 rounded-lg px-4 hover:bg-amber" onClick={openAdd}>
-              <CirclePlus className="size-4" /> Add New Menu Item
-            </Button>
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {[
-              { label: "Live Menu SKUs", value: String(liveCount + 29), foot: "4 Seasonal active", tone: "text-forest" },
-              { label: "Daily Units Dispensed", value: "345", foot: "82% of day avg", tone: "text-amber" },
-              { label: "Stock Alert States", value: "1 Critical", foot: "Basque Cheesecake (4 left)", tone: "text-danger" },
-              { label: "86'd / Paused", value: `${all.length - liveCount} Item${all.length - liveCount === 1 ? "" : "s"}`, foot: "Auto-resets 06:00 AM", tone: "text-amber" },
+              { label: "ទំនិញកំពុងលក់", value: String(liveCount + 29), foot: "៤ ធាតុតាមរដូវកំពុងលក់", tone: "text-forest" },
+              { label: "ចំនួនលក់បានប្រចាំថ្ងៃ", value: "345", foot: "៨២% នៃមធ្យមភាគប្រចាំថ្ងៃ", tone: "text-amber" },
+              { label: "ស្តុកជិតអស់", value: "១ ធ្ងន់ធ្ងរ", foot: "នំឈីសបាស្ក (នៅសល់ ៤)", tone: "text-danger" },
+              { label: "ដកចេញ / ផ្អាក", value: `ធាតុចំនួន ${all.length - liveCount}`, foot: "កំណត់ឡើងវិញស្វ័យប្រវត្តិម៉ោង ៦:០០ ព្រឹក", tone: "text-amber" },
             ].map((s) => (
               <div key={s.label} className="rounded-2xl bg-white p-3 ring-1 ring-border">
                 <p className="text-label-md text-ink-soft">{s.label}</p>
-                <p className={cn("mt-1 font-serif text-headline-sm", s.label.startsWith("Stock") ? "text-danger" : "text-ink")}>{s.value}</p>
+                <p className={cn("mt-1 font-serif text-headline-sm", s.label.startsWith("ស្តុក") ? "text-danger" : "text-ink")}>{s.value}</p>
                 <p className={cn("text-label-sm font-semibold", s.tone)}>{s.foot}</p>
               </div>
             ))}
@@ -166,37 +180,32 @@ export function CatalogManager() {
 
         <Panel tone="dark" className="flex flex-col gap-3">
           <div className="flex items-start justify-between">
-            <p className="eyebrow text-amber-glow">Menu Utilities</p>
+            <p className="eyebrow text-amber-glow">ឧបករណ៍ម៉ឺនុយ</p>
             <span className="rounded-md bg-milk/10 px-2 py-0.5 text-label-sm">v3.4 Roastery</span>
           </div>
-          <h2 className="font-serif text-headline-sm">Batch Modifications</h2>
-          <p className="text-body-sm text-milk/75">
-            Execute immediate global price recalibrations or curate origin tasting cards.
-          </p>
-          {[
-            { icon: FileSpreadsheet, title: "Bulk Price Adjustment", sub: "Oat milk, single origins (+10%)" },
-            { icon: NotebookPen, title: "Tasting Notes Editor", sub: "Sync SCA wheel tags to POS cards" },
-          ].map(({ icon: Icon, title, sub }) => (
-            <button
-              key={title}
-              type="button"
-              onClick={() => toast(title)}
-              className="flex items-center gap-3 rounded-xl bg-milk/10 p-3 text-left transition-colors hover:bg-milk/15"
-            >
-              <Icon className="size-5 text-amber-glow" />
-              <span className="flex-1">
-                <span className="block text-label-lg">{title}</span>
-                <span className="block text-label-sm text-milk/70">{sub}</span>
-              </span>
-              <ChevronRight className="size-4" />
-            </button>
-          ))}
+          <h2 className="font-serif text-headline-sm">ទំនិញតាមប្រភេទ</h2>
+          <p className="text-body-sm text-milk/75">ចំនួនទំនិញកំពុងបង្ហាញក្នុងម៉ឺនុយ សម្រាប់ប្រភេទនីមួយៗ។</p>
+          <div className="flex flex-col gap-2.5">
+            {categories.map((c) => {
+              const count = all.filter((p) => p.category === c.id).length
+              const max = Math.max(...categories.map((cc) => all.filter((p) => p.category === cc.id).length), 1)
+              return (
+                <div key={c.id} className="flex items-center gap-3">
+                  <span className="w-28 shrink-0 truncate text-label-sm text-milk/75">{c.labelKm ?? c.label}</span>
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-milk/10">
+                    <div className="h-full rounded-full bg-amber-glow" style={{ width: `${(count / max) * 100}%` }} />
+                  </div>
+                  <span className="w-6 shrink-0 text-right text-label-sm font-semibold tabular">{count}</span>
+                </div>
+              )
+            })}
+          </div>
           <div className="mt-auto grid grid-cols-2 gap-2 pt-2">
             <Button variant="secondary" size="sm" className="gap-1.5 bg-milk/10 text-milk hover:bg-milk/20">
-              <Download className="size-3.5" /> Export CSV
+              <Download className="size-3.5" /> នាំចេញ CSV
             </Button>
-            <Button variant="secondary" size="sm" className="bg-milk/10 text-milk hover:bg-milk/20">
-              Import Catalog
+            <Button variant="secondary" size="sm" className="bg-milk/10 text-milk hover:bg-milk/20" onClick={() => setImporting(true)}>
+              នាំចូលកាតាឡុក
             </Button>
           </div>
         </Panel>
@@ -213,12 +222,15 @@ export function CatalogManager() {
               tab === c.id ? "bg-espresso text-milk" : "bg-oat text-ink hover:bg-oat-deep"
             )}
           >
-            {c.label}
+            {c.labelKm ?? c.label}
             <span className={cn("rounded-full px-1.5 text-label-sm", tab === c.id ? "bg-milk/20" : "bg-oat-deeper text-ink-soft")}>
               {all.filter((p) => p.category === c.id).length}
             </span>
           </button>
         ))}
+        <Button className="ml-auto h-auto shrink-0 gap-2 rounded-full px-4 py-2 text-label-lg font-semibold hover:bg-amber" onClick={openAdd}>
+          <CirclePlus className="size-4" /> បន្ថែមម្ហូបថ្មី
+        </Button>
       </div>
 
       <div className="flex flex-col gap-2 rounded-2xl bg-oat-light p-2 ring-1 ring-espresso/5 md:flex-row">
@@ -227,23 +239,23 @@ export function CatalogManager() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter products by title, roast origin, harvest lot, modifier…"
+            placeholder="ត្រងទំនិញតាមឈ្មោះ ដើមកំណើតកាហ្វេ ឡុតច្រូតកាត់ ឬជម្រើសបន្ថែម…"
             className="h-10 rounded-xl border-transparent bg-white pl-9"
           />
         </div>
         <Select value={status} onValueChange={(v) => v && setStatus(v as string)}>
           <SelectTrigger className="h-10 w-full rounded-xl border-0 bg-white text-label-md md:w-56">
-            <span className="text-ink-soft">Status:</span> <SelectValue />
+            <span className="text-ink-soft">ស្ថានភាព៖</span> <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {["All (Active & 86'd)", "Active", "86'd"].map((s) => (
+            {["ទាំងអស់ (កំពុងលក់ & ដកចេញ)", "កំពុងលក់", "ដកចេញ"].map((s) => (
               <SelectItem key={s} value={s}>
                 {s}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Button variant="ghost" size="icon-lg" className="max-md:hidden" aria-label="Reset filters" onClick={() => { setQuery(""); setStatus("All (Active & 86'd)") }}>
+        <Button variant="ghost" size="icon-lg" className="max-md:hidden" aria-label="កំណត់តម្រងឡើងវិញ" onClick={() => { setQuery(""); setStatus("ទាំងអស់ (កំពុងលក់ & ដកចេញ)") }}>
           <RotateCcw />
         </Button>
       </div>
@@ -253,10 +265,10 @@ export function CatalogManager() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-4 text-label-sm uppercase">Menu Item</TableHead>
-                <TableHead className="text-label-sm uppercase max-sm:hidden">Profile</TableHead>
-                <TableHead className="text-right text-label-sm uppercase">Price</TableHead>
-                <TableHead className="pr-4 text-right text-label-sm uppercase">Live</TableHead>
+                <TableHead className="pl-4 text-label-sm uppercase">ធាតុម៉ឺនុយ</TableHead>
+                <TableHead className="text-label-sm uppercase max-sm:hidden">ប្រភេទ</TableHead>
+                <TableHead className="text-right text-label-sm uppercase">តម្លៃ</TableHead>
+                <TableHead className="pr-4 text-right text-label-sm uppercase">បង្ហាញ</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -274,10 +286,10 @@ export function CatalogManager() {
                         <Image src={p.image} alt="" width={48} height={48} className="size-12 rounded-xl object-cover" />
                         <div className="min-w-0">
                           <p className="flex items-center gap-1.5 text-title-md text-ink">
-                            <span className="truncate">{p.name}</span>
-                            {isCustom(p) ? <Tag tone="forest">New</Tag> : null}
+                            <span className="truncate">{p.nameKm ?? p.name}</span>
+                            {isCustom(p) ? <Tag tone="forest">ថ្មី</Tag> : null}
                           </p>
-                          <p className="text-label-sm text-amber">{p.kicker}</p>
+                          <p className="text-label-sm text-amber">{p.kickerKm ?? p.kicker}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -285,7 +297,7 @@ export function CatalogManager() {
                       <div className="flex flex-wrap gap-1">
                         {p.tags.map((t) => (
                           <Tag key={t.label} tone={t.tone}>
-                            {t.label}
+                            {t.labelKm ?? t.label}
                           </Tag>
                         ))}
                       </div>
@@ -299,7 +311,7 @@ export function CatalogManager() {
                           if (selected === p.slug) setDraft((d) => (d ? { ...d, live } : d))
                         }}
                         className="data-checked:bg-forest"
-                        aria-label={`${p.name} visible`}
+                        aria-label={`${p.nameKm ?? p.name} មើលឃើញ`}
                       />
                     </TableCell>
                   </TableRow>
@@ -308,7 +320,7 @@ export function CatalogManager() {
               {list.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} className="py-10 text-center text-body-md text-ink-soft">
-                    No items match these filters.
+                    គ្មានទំនិញត្រូវនឹងតម្រងទាំងនេះទេ។
                   </TableCell>
                 </TableRow>
               ) : null}
@@ -320,83 +332,100 @@ export function CatalogManager() {
           <aside className="flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-warm-lg ring-1 ring-espresso/5 xl:sticky xl:top-24">
             <div className="flex items-start justify-between">
               <div>
-                <p className="eyebrow">Live Operational Quick-Edit</p>
-                <h2 className="mt-0.5 font-serif text-headline-sm text-ink">{current.name}</h2>
+                <p className="eyebrow">កែសម្រួលរហ័សផ្ទាល់</p>
+                <h2 className="mt-0.5 font-serif text-headline-sm text-ink">{current.nameKm ?? current.name}</h2>
               </div>
-              <Button variant="ghost" size="icon-sm" className="rounded-full bg-oat" aria-label="Close editor" onClick={() => setSelected(null)}>
+              <Button variant="ghost" size="icon-sm" className="rounded-full bg-oat" aria-label="បិទផ្ទាំងកែសម្រួល" onClick={() => setSelected(null)}>
                 <X />
               </Button>
             </div>
             <div className="relative h-36 overflow-hidden rounded-2xl">
               <Image src={current.image} alt="" fill sizes="384px" className="object-cover" />
               <button type="button" className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-espresso/80 to-transparent p-3 text-label-lg text-milk">
-                <Camera className="size-4" /> Update POS Hero Image
+                <Camera className="size-4" /> ដូររូបភាពមេលើ POS
               </button>
             </div>
             <Label className="flex items-center gap-3 rounded-xl bg-oat-light p-3 font-normal">
               <Eye className="size-4 text-amber" />
               <span className="flex-1">
-                <span className="block text-title-md text-ink">Store Visibility</span>
-                <span className="block text-body-sm text-ink-soft">Live on Web & Aura Mobile App</span>
+                <span className="block text-title-md text-ink">ភាពមើលឃើញលើហាង</span>
+                <span className="block text-body-sm text-ink-soft">មើលឃើញនៅលើគេហទំព័រ និងកម្មវិធីទូរស័ព្ទ Aura</span>
               </span>
               <Switch checked={draft.live} onCheckedChange={(live) => setDraft({ ...draft, live })} className="data-checked:bg-forest" />
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <div className="rounded-xl bg-oat-light p-3">
-                <Label htmlFor="base-price" className="text-label-md text-ink-soft">
-                  Base Price ($)
+                <Label htmlFor="size-price-1" className="text-label-md text-ink-soft">
+                  តម្លៃទំហំតូច
                 </Label>
                 <Input
-                  id="base-price"
+                  id="size-price-1"
                   inputMode="decimal"
-                  value={draft.price}
-                  onChange={(e) => setDraft({ ...draft, price: e.target.value })}
+                  value={draft.size1}
+                  onChange={(e) => setDraft({ ...draft, size1: e.target.value.replace(/[^0-9.]/g, "") })}
+                  placeholder="6.00"
                   className="mt-1.5 h-9 bg-white text-title-md tabular focus-visible:border-amber-bright"
                 />
               </div>
               <div className="rounded-xl bg-oat-light p-3">
-                <p className="text-label-md text-ink-soft">Target Food Cost</p>
-                <p className="mt-2.5 text-title-lg text-forest tabular">{rowFor(current).cost.toFixed(1)}%</p>
+                <Label htmlFor="size-price-2" className="text-label-md text-ink-soft">
+                  តម្លៃទំហំធម្មតា
+                </Label>
+                <Input
+                  id="size-price-2"
+                  inputMode="decimal"
+                  value={draft.size2}
+                  onChange={(e) => setDraft({ ...draft, size2: e.target.value.replace(/[^0-9.]/g, "") })}
+                  className="mt-1.5 h-9 bg-white text-title-md tabular focus-visible:border-amber-bright"
+                />
+              </div>
+              <div className="rounded-xl bg-oat-light p-3">
+                <Label htmlFor="size-price-3" className="text-label-md text-ink-soft">
+                  តម្លៃទំហំធំ
+                </Label>
+                <Input
+                  id="size-price-3"
+                  inputMode="decimal"
+                  value={draft.size3}
+                  onChange={(e) => setDraft({ ...draft, size3: e.target.value.replace(/[^0-9.]/g, "") })}
+                  placeholder="7.00"
+                  className="mt-1.5 h-9 bg-white text-title-md tabular focus-visible:border-amber-bright"
+                />
               </div>
             </div>
             <div>
-              <p className="eyebrow">Extraction Spec (Synesso MVP)</p>
-              <dl className="mt-2 divide-y divide-border rounded-xl bg-oat-light text-label-md">
-                {[
-                  ["Pressure Profile", "9.2 Bar Flat (Pre-infuse 4s)"],
-                  ["Dry Dose / Wet Yield", "19.5g In / 42.0g Out (27s)"],
-                  ["Active Bean Hopper", "Colombia Pink Bourbon (Lot 4B)"],
-                ].map(([k, v]) => (
-                  <div key={k} className="flex justify-between gap-2 px-3 py-2">
-                    <dt className="text-ink-soft">{k}</dt>
-                    <dd className={cn("text-right text-ink", k.startsWith("Active") && "text-amber")}>{v}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-            <div>
-              <p className="eyebrow">Active Modifier Groups</p>
+              <p className="eyebrow">គ្រឿងលម្អ និងសារធាតុបន្ថែម</p>
               <div className="mt-2 flex flex-col gap-1.5">
-                {modifierGroups.map((m) => (
-                  <Label key={m} className="flex cursor-pointer items-center justify-between gap-2 rounded-lg bg-oat-light px-3 py-2 text-body-sm font-normal">
-                    {m}
-                    <Checkbox
-                      checked={draft.mods.includes(m)}
-                      onCheckedChange={(on) =>
-                        setDraft({ ...draft, mods: on ? [...draft.mods, m] : draft.mods.filter((x) => x !== m) })
-                      }
-                      className="data-checked:border-amber data-checked:bg-amber"
-                    />
-                  </Label>
-                ))}
+                {STANDARD_TOPPINGS.map((t) => {
+                  const checked = draft.mods.includes(t.id)
+                  return (
+                    <Label
+                      key={t.id}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-body-sm font-normal",
+                        checked ? "bg-amber-soft/40" : "bg-oat-light hover:bg-oat"
+                      )}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(on) =>
+                          setDraft({ ...draft, mods: on ? [...draft.mods, t.id] : draft.mods.filter((x) => x !== t.id) })
+                        }
+                        className="data-checked:border-amber data-checked:bg-amber"
+                      />
+                      <span className="flex-1 text-ink">{t.labelKm ?? t.label}</span>
+                      <span className="text-label-sm font-bold text-amber">{t.delta ? `+${formatPrice(t.delta)}` : "រួមបញ្ចូល"}</span>
+                    </Label>
+                  )
+                })}
               </div>
             </div>
             <div className="flex gap-2">
               <Button onClick={push} className="h-10 flex-1 gap-2 rounded-lg hover:bg-amber">
-                <RefreshCw className="size-4" /> Push Changes to POS
+                <RefreshCw className="size-4" /> ផ្ញើការផ្លាស់ប្តូរទៅ POS
               </Button>
               <Button variant="secondary" className="h-10 rounded-lg" onClick={() => select(current.slug)}>
-                Discard
+                លុបចោល
               </Button>
             </div>
             {isCustom(current) ? (
@@ -405,13 +434,13 @@ export function CatalogManager() {
                 className="h-9 gap-1.5 rounded-lg text-danger hover:bg-danger-soft hover:text-danger"
                 onClick={() => removeItem(current)}
               >
-                <Trash2 className="size-4" /> Remove item from menu
+                <Trash2 className="size-4" /> ដកទំនិញចេញពីម៉ឺនុយ
               </Button>
             ) : null}
           </aside>
         ) : (
           <div className="rounded-3xl border border-dashed border-espresso/15 p-8 text-center text-body-md text-ink-soft">
-            Select a menu item to open the live quick-edit panel.
+            ជ្រើសរើសទំនិញមួយ ដើម្បីបើកផ្ទាំងកែសម្រួលរហ័ស។
           </div>
         )}
       </div>

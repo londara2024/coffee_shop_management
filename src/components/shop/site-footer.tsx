@@ -13,7 +13,7 @@ export function SiteFooter() {
     <footer className="mt-16 hidden bg-oat-light lg:block">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:grid-cols-2 md:px-6 lg:grid-cols-4">
         <div className="space-y-3">
-          <p className="font-serif text-headline-sm text-ink">Aura Coffee Roasters</p>
+          <p className="font-serif text-headline-sm text-ink">Free Shop Coffee</p>
           <p className="text-body-md text-ink-soft">
             Artisanal single-origin lots and slow-roasted specialty micro-batches. Respecting the botanical soul of
             every harvest.
@@ -73,7 +73,7 @@ export function SiteFooter() {
       </div>
       <Separator className="mx-auto max-w-7xl" />
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 text-body-sm text-ink-soft sm:flex-row sm:items-center sm:justify-between md:px-6">
-        <p>© 2025 Aura Coffee Roasters Inc. All botanical rights preserved.</p>
+        <p>© 2025 Free Shop Coffee Inc. All botanical rights preserved.</p>
         <div className="flex gap-5 text-label-md">
           <Link href="/">Terms of Sourcing</Link>
           <Link href="/">Privacy Policy</Link>

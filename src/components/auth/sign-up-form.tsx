@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { markSignedIn } from "@/lib/auth"
 
 type Errors = { name?: string; email?: string; phone?: string; password?: string; terms?: string }
 
@@ -38,13 +39,13 @@ export function SignUpForm() {
 
   function validate(): Errors {
     const e: Errors = {}
-    if (form.name.trim().length < 2) e.name = "Tell us the name for your cup."
-    if (!isEmail(form.email)) e.email = "Enter a valid email for your Roastery ID & receipts."
-    if (form.phone && form.phone.replace(/\D/g, "").length < 7) e.phone = "That number looks too short."
-    if (form.password.length < 8) e.password = "Use at least 8 characters."
+    if (form.name.trim().length < 2) e.name = "សូមប្រាប់យើងនូវឈ្មោះសម្រាប់ពែងរបស់អ្នក។"
+    if (!isEmail(form.email)) e.email = "សូមបញ្ចូលអ៊ីមែលត្រឹមត្រូវ សម្រាប់លេខសម្គាល់ហាង និងបង្កាន់ដៃ។"
+    if (form.phone && form.phone.replace(/\D/g, "").length < 7) e.phone = "លេខនេះហាក់ដូចជាខ្លីពេក។"
+    if (form.password.length < 8) e.password = "សូមប្រើយ៉ាងហោចណាស់ ៨ តួអក្សរ។"
     else if (!/[A-Za-z]/.test(form.password) || !/[0-9]/.test(form.password))
-      e.password = "Include both letters and numbers."
-    if (!terms) e.terms = "Please accept the Terms of Service and Privacy Policy."
+      e.password = "ត្រូវមានទាំងអក្សរ និងលេខ។"
+    if (!terms) e.terms = "សូមយល់ព្រមលើលក្ខខណ្ឌសេវាកម្ម និងគោលការណ៍ឯកជនភាព។"
     return e
   }
 
@@ -57,8 +58,9 @@ export function SignUpForm() {
     setStatus("loading")
     setTimeout(() => {
       setStatus("done")
-      toast.success(`Welcome to Aura, ${form.name.trim().split(" ")[0]}!`, {
-        description: "Your welcome pour is waiting at the counter.",
+      markSignedIn()
+      toast.success(`សូមស្វាគមន៍មកកាន់ Free Shop Coffee, ${form.name.trim().split(" ")[0]}!`, {
+        description: "ភេសជ្ជៈស្វាគមន៍របស់អ្នកកំពុងរង់ចាំនៅកន្លែងបញ្ជរ។",
       })
       setTimeout(() => router.push("/"), 600)
     }, 1200)
@@ -69,10 +71,10 @@ export function SignUpForm() {
       <form noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
         <AuthHeading
           icon={BadgeCheck}
-          badge="Secure Botanica Registration"
-          title="Create Your Account"
-          description="Sign up in seconds to personalize your brew profile and unlock immediate member benefits."
-          aside={<span className="shrink-0 text-body-sm whitespace-nowrap text-ink-soft">Step 1 of 1</span>}
+          badge="ការចុះឈ្មោះដោយសុវត្ថិភាព"
+          title="បង្កើតគណនីរបស់អ្នក"
+          description="ចុះឈ្មោះ ដើម្បីកំណត់ទម្រង់កាហ្វេ និងទទួលបានអត្ថប្រយោជន៍សមាជិកភ្លាមៗ។"
+          aside={<span className="shrink-0 text-body-sm whitespace-nowrap text-ink-soft">ជំហានទី ១ នៃ ១</span>}
         />
 
         <SocialButtons verb="Sign up" divider="Or register with email" />
@@ -80,7 +82,7 @@ export function SignUpForm() {
         <div className="flex flex-col gap-4">
           <Field
             id="name"
-            label="Full Name"
+            label="ឈ្មោះពេញ"
             icon={IdCard}
             autoComplete="name"
             placeholder="Elena Rostova"
@@ -90,7 +92,7 @@ export function SignUpForm() {
           />
           <Field
             id="email"
-            label="Email Address"
+            label="អាសយដ្ឋានអ៊ីមែល"
             icon={Mail}
             type="email"
             autoComplete="email"
@@ -98,27 +100,27 @@ export function SignUpForm() {
             value={form.email}
             onChange={set("email")}
             error={errors.email}
-            hint={<span className="text-label-sm font-semibold text-amber uppercase">Roastery ID &amp; Receipts</span>}
+            hint={<span className="text-label-sm font-semibold text-amber uppercase">លេខសម្គាល់ហាង និងបង្កាន់ដៃ</span>}
           />
           <Field
             id="phone"
-            label="Phone Number"
+            label="លេខទូរស័ព្ទ"
             icon={Phone}
             type="tel"
             autoComplete="tel"
-            placeholder="+1 (555) 234-5678"
+            placeholder="+855 12 345 678"
             value={form.phone}
             onChange={set("phone")}
             error={errors.phone}
-            hint={<span className="text-label-sm text-ink-soft">Optional • Express Barista SMS</span>}
+            hint={<span className="text-label-sm text-ink-soft">ស្រេចចិត្ត • សារ SMS ពីបារីស្តា</span>}
           />
           <div className="flex flex-col gap-2.5">
             <PasswordField
               id="password"
-              label="Create Password"
+              label="បង្កើតពាក្យសម្ងាត់"
               icon={Lock}
               autoComplete="new-password"
-              placeholder="Minimum 8 mindful characters"
+              placeholder="យ៉ាងតិច ៨ តួអក្សរ"
               value={form.password}
               onChange={set("password")}
               error={errors.password}
@@ -130,13 +132,13 @@ export function SignUpForm() {
         <div className="flex flex-col gap-3">
           <Label className="flex cursor-pointer items-center gap-3 text-body-md font-normal text-ink">
             <Checkbox checked={remember} onCheckedChange={setRemember} className={checkbox} />
-            Keep me signed in on this roastery device
+            រក្សាការចូលប្រើរបស់ខ្ញុំនៅលើឧបករណ៍នេះ
           </Label>
           <Label className="flex cursor-pointer items-center gap-3 text-body-md font-normal text-ink">
             <Checkbox checked={news} onCheckedChange={setNews} className={checkbox} />
             <span>
-              Send me seasonal harvest drops and cupping invitations{" "}
-              <span className="text-label-sm text-ink-mute">(Optional)</span>
+              ផ្ញើដំណឹងផលិតផលថ្មីតាមរដូវ និងការអញ្ជើញភ្លក្សរសជាតិមកខ្ញុំ{" "}
+              <span className="text-label-sm text-ink-mute">(ស្រេចចិត្ត)</span>
             </span>
           </Label>
           <div className="flex flex-col gap-1">
@@ -151,13 +153,13 @@ export function SignUpForm() {
                 className={checkbox}
               />
               <span>
-                I agree to the{" "}
+                ខ្ញុំយល់ព្រមលើ{" "}
                 <Link href="#" className="text-amber underline underline-offset-4">
-                  Terms of Service
+                  លក្ខខណ្ឌសេវាកម្ម
                 </Link>{" "}
-                and{" "}
+                និង{" "}
                 <Link href="#" className="text-amber underline underline-offset-4">
-                  Privacy Policy
+                  គោលការណ៍ឯកជនភាព
                 </Link>
               </span>
             </Label>
@@ -168,26 +170,26 @@ export function SignUpForm() {
         <Button type="submit" disabled={status !== "idle"} className="h-auto min-h-12 w-full gap-2 rounded-xl py-3 text-title-md whitespace-normal hover:bg-amber">
           {status === "idle" && (
             <>
-              Create Account &amp; Claim Welcome Pour <ArrowRight className="size-4" />
+              បង្កើតគណនី និងទទួលភេសជ្ជៈស្វាគមន៍ <ArrowRight className="size-4" />
             </>
           )}
           {status === "loading" && (
             <>
-              <Loader2 className="size-4 animate-spin" /> Brewing your account…
+              <Loader2 className="size-4 animate-spin" /> កំពុងបង្កើតគណនីរបស់អ្នក...
             </>
           )}
           {status === "done" && (
             <>
-              <CircleCheck className="size-4" /> Account created
+              <CircleCheck className="size-4" /> បានបង្កើតគណនីរួចរាល់
             </>
           )}
         </Button>
 
         <Separator />
         <p className="text-center text-body-md text-balance text-ink-soft">
-          Already have an Aura account?{" "}
+          មានគណនីរួចហើយមែនទេ?{" "}
           <Link href="/sign-in" className="font-semibold text-amber underline underline-offset-4">
-            Sign In
+            ចូលប្រើគណនី
           </Link>
         </p>
       </form>

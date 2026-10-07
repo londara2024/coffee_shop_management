@@ -24,11 +24,11 @@ export function OrderBar() {
             {count}
           </span>
           <span className="flex flex-1 flex-col leading-tight">
-            <span className="text-label-sm tracking-wider text-milk/70 uppercase">Current order</span>
+            <span className="text-label-sm tracking-wider text-milk/70 uppercase">ការបញ្ជាទិញបច្ចុប្បន្ន</span>
             <span className="text-title-md font-bold tabular">{formatPrice(subtotal)}</span>
           </span>
           <span className="flex items-center gap-1.5 rounded-full bg-amber px-4 py-2 text-label-lg font-semibold">
-            Review Order <ArrowRight className="size-4" />
+            ពិនិត្យការបញ្ជាទិញ <ArrowRight className="size-4" />
           </span>
         </Link>
       </div>

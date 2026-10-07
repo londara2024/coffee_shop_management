@@ -10,9 +10,9 @@
  * sans vs serif UI text). These tokens are the single source both layouts share.
  */
 @theme inline {
-  --font-sans: var(--font-jakarta);
-  --font-serif: var(--font-playfair);
-  --font-heading: var(--font-playfair);
+  --font-sans: "Koh Santepheap", sans-serif;
+  --font-serif: "Koh Santepheap", sans-serif;
+  --font-heading: "Koh Santepheap", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* shadcn semantic tokens */
@@ -152,6 +152,12 @@
   --sidebar-ring: #c47c35;
 }
 
+/* Koh Santepheap's glyphs render visually larger than the old Latin fonts at the same font-size,
+   so the root size is scaled down to compensate. */
+html {
+  font-size: 87.5%;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -162,6 +168,9 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    /* Default text weight is Thin 100; elements with an explicit Tailwind font-weight utility
+       (font-bold, font-semibold, etc.) still override this — this sits in the base layer, below utilities. */
+    font-weight: 100;
   }
   ::selection {
     background: var(--color-amber-soft);

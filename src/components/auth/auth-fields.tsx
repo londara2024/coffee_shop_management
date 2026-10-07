@@ -68,7 +68,7 @@ export function SocialButtons({ verb, divider }: { verb: string; divider: string
   const soon = (provider: string) =>
     toast(`${provider} ${verb.toLowerCase()} isn't connected yet`, { description: "Use your email below for now." })
   return (
-    <div className="flex flex-col gap-5">
+    <div className="hidden flex-col gap-5">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Button type="button" variant="secondary" className="h-11 gap-2 rounded-xl bg-oat text-body-md hover:bg-oat-deep" onClick={() => soon("Google")}>
           <GoogleIcon /> {verb} with Google
@@ -153,7 +153,7 @@ export function PasswordField(props: Omit<FieldProps, "type" | "end">) {
   )
 }
 
-const strengthLabels = ["Light bloom", "Gentle infusion", "Balanced body", "Strong roast", "Artisanal Reserve"]
+const strengthLabels = ["ផ្កាស្រាល", "ចំហុយទន់", "តុល្យភាពល្អ", "ដុតខាប់", "ថ្នាក់ពិសេសសិប្បកម្ម"]
 
 /** Same scoring as the design's inline script: length ≥4, ≥8, upper+digit, symbol. */
 export function passwordStrength(value: string) {
@@ -176,9 +176,9 @@ export function StrengthMeter({ value }: { value: string }) {
       </div>
       <div className="flex justify-between text-label-sm text-ink-soft">
         <span>
-          Sensory complexity: <b className="text-amber">{strengthLabels[score]}</b>
+          កម្រិតស្មុគស្មាញនៃរសជាតិ៖ <b className="text-amber">{strengthLabels[score]}</b>
         </span>
-        <span>Include letters &amp; numbers</span>
+        <span>ត្រូវមានទាំងអក្សរ និងលេខ</span>
       </div>
     </div>
   )

@@ -10,7 +10,8 @@ export type PlacedOrder = {
   subtotal: number
   tax: number
   tip: number
-  credit: number
+  discount: number
+  promoDiscount: number
   total: number
   payment: string
   pickup: string

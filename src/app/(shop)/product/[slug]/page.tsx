@@ -1,12 +1,10 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowUpRight, Droplet, Flame, Flower2, Leaf, Mountain } from "lucide-react"
 
 import { AddPairingButton } from "@/components/shop/add-pairing-button"
 import { CustomProductView } from "@/components/shop/custom-product-view"
 import { ProductConfigurator } from "@/components/shop/product-configurator"
-import { ImagePill } from "@/components/shop/tag"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,13 +24,6 @@ export async function generateMetadata({ params }: PageProps<"/product/[slug]">)
   return { title: getProduct(slug)?.name ?? "Product" }
 }
 
-const profile = [
-  { label: "Acidity", value: "Mild (2/5)", pct: 40 },
-  { label: "Sweetness", value: "Rich (4/5)", pct: 80 },
-  { label: "Body", value: "Velvety (4/5)", pct: 80 },
-  { label: "Roast Level", value: "Med-Light", pct: 45 },
-]
-
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
   const { slug } = await params
   const product = getProduct(slug)
@@ -47,15 +38,17 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
       <Breadcrumb className="mb-4">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/" />}>Menu</BreadcrumbLink>
+            <BreadcrumbLink render={<Link href="/" />}>ម៉ឺនុយ</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href={`/#${category.id}-section`} />}>{category.label}</BreadcrumbLink>
+            <BreadcrumbLink render={<Link href={`/#${category.id}-section`} />}>
+              {category.labelKm ?? category.label}
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className="truncate">{product.name}</BreadcrumbPage>
+            <BreadcrumbPage className="truncate">{product.nameKm ?? product.name}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -64,34 +57,25 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
         <div className="lg:col-start-1 lg:row-start-1">
           <div className="overflow-hidden rounded-3xl bg-white p-3 shadow-warm ring-1 ring-espresso/5">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-              <Image src={hero} alt={product.name} fill priority sizes="(min-width:1024px) 640px, 100vw" className="object-cover" />
-              <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                <ImagePill variant="light">{product.kicker}</ImagePill>
-                <ImagePill>{product.imageTag ?? "Barista Pick"}</ImagePill>
-                <ImagePill variant="light" className="text-forest">
-                  <Leaf className="mr-1 size-3" /> 100% Organic Arabica
-                </ImagePill>
-              </div>
-              <span className="absolute right-3 bottom-3">
-                <ImagePill variant="light" className="text-ink">
-                  <Flame className="mr-1 size-3 text-amber" /> {product.kcal}–{product.kcal + 30} Cal (12 oz)
-                </ImagePill>
-              </span>
+              <Image
+                src={hero}
+                alt={product.name}
+                fill
+                priority
+                sizes="(min-width:1024px) 640px, 100vw"
+                className="object-cover"
+              />
             </div>
-            <div className="flex items-center justify-between gap-3 px-2 pt-3 pb-1">
-              <div className="flex items-center gap-3">
-                <span className="flex size-9 items-center justify-center rounded-full bg-amber-soft text-amber">
-                  <Droplet className="size-4" />
-                </span>
-                <div>
-                  <p className="text-title-md text-ink">Slow-Extracted Micro-Batch</p>
-                  <p className="text-body-sm text-ink-soft">Pulled at 9.2 bars on Slayer Espresso v3</p>
-                </div>
+            {product.sizePrices ? (
+              <div className="flex flex-wrap items-center gap-1.5 px-2 pt-3 pb-1">
+                <span className="text-label-sm font-semibold text-ink-soft">ទំហំតម្លៃ៖</span>
+                {(["តូច", "ធម្មតា", "ធំ"] as const).map((label, i) => (
+                  <span key={label} className="rounded-full bg-oat px-2.5 py-0.5 text-label-sm font-semibold text-ink">
+                    {label} {formatPrice(product.sizePrices![i])}
+                  </span>
+                ))}
               </div>
-              <Link href="#" className="hidden items-center gap-1 text-label-md font-semibold text-amber sm:flex">
-                View Brew Protocol <ArrowUpRight className="size-3.5" />
-              </Link>
-            </div>
+            ) : null}
           </div>
         </div>
 
@@ -99,89 +83,32 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
           <ProductConfigurator product={product} />
         </div>
 
-        <div className="flex flex-col gap-6 lg:col-start-1 lg:row-start-2 lg:self-start">
-          <section className="rounded-3xl bg-oat-light p-5 ring-1 ring-espresso/5 sm:p-7">
-            <span className="eyebrow">The Botanical Profile</span>
-            <h2 className="mt-1 font-serif text-headline-md text-ink">Warm Spiced Velvet</h2>
-            <p className="mt-2 text-body-lg text-ink-soft">
-              {product.description ??
-                "Our signature seasonal craft creation pairs freshly pulled single-origin Colombian espresso with slow-steamed barista oat milk, infused naturally with raw wildflower honey and a delicate honeycomb sweetness."}
-            </p>
-            <div className="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
-              {profile.map((p) => (
-                <div key={p.label} className="rounded-lg bg-white p-3 ring-1 ring-border">
-                  <p className="text-label-sm text-ink-soft">{p.label}</p>
-                  <p className="text-title-md text-ink">{p.value}</p>
-                  <div className="mt-2 h-1 rounded-full bg-oat-deep">
-                    <div className="h-full rounded-full bg-amber" style={{ width: `${p.pct}%` }} />
+        <div className="lg:col-start-1 lg:row-start-2">
+          <section>
+            <h2 className="font-serif text-headline-md text-ink">បំពេញបន្ថែមពែងរបស់អ្នក</h2>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {pairings.map((p) => (
+                <article
+                  key={p.slug}
+                  className="flex w-56 shrink-0 flex-col gap-2 rounded-xl bg-white p-2.5 shadow-warm ring-1 ring-espresso/5"
+                >
+                  <div className="relative aspect-4/3 overflow-hidden rounded-lg">
+                    <Image src={p.image} alt={p.name} fill sizes="224px" className="object-cover" />
                   </div>
-                </div>
+                  <div>
+                    <p className="line-clamp-1 text-title-md text-ink">{p.nameKm ?? p.name}</p>
+                    <p className="line-clamp-1 text-body-sm text-ink-soft">{p.descriptionKm ?? p.description}</p>
+                  </div>
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-title-md font-semibold text-ink tabular">{formatPrice(p.price)}</span>
+                  </div>
+                  <AddPairingButton item={p} />
+                </article>
               ))}
             </div>
-            <div className="mt-4 flex flex-col gap-3 rounded-xl bg-oat p-4 sm:flex-row sm:items-center">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-oat-deeper text-amber">
-                <Mountain className="size-5" />
-              </span>
-              <div className="flex-1">
-                <p className="eyebrow">Single-Origin Harvest</p>
-                <p className="text-title-md text-ink">Cooperativa Santa Teresa</p>
-                <p className="text-body-sm text-ink-soft">Huila, Colombia • 1,750m • Fully Washed Castillo</p>
-              </div>
-              <span className="w-fit rounded-full bg-white px-3 py-1 text-label-sm font-semibold text-ink-soft ring-1 ring-border">
-                Fair Trace #8942
-              </span>
-            </div>
           </section>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {[
-              {
-                icon: Droplet,
-                title: "Minor Figures Organic Oat",
-                text: "Craft formulated without gums or preservatives, microfoamed to silky 145°F gloss.",
-              },
-              {
-                icon: Flower2,
-                title: "Raw Wildflower Honey",
-                text: "Sourced sustainably from high-desert apiaries, providing floral enzymes and golden sweetness.",
-              },
-            ].map(({ icon: Icon, title, text }) => (
-              <div key={title} className="flex gap-3 rounded-2xl bg-oat-light p-4 ring-1 ring-espresso/5">
-                <Icon className="mt-0.5 size-5 shrink-0 text-amber" />
-                <div>
-                  <p className="text-title-md text-ink">{title}</p>
-                  <p className="text-body-sm text-ink-soft">{text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
-
-      <section className="mt-14">
-        <span className="eyebrow">Pairing Selections</span>
-        <h2 className="mt-1 font-serif text-headline-md text-ink">Complement Your Cup</h2>
-        <div className="mt-5 flex snap-x gap-4 overflow-x-auto pb-2 scrollbar-none md:grid md:grid-cols-3 md:overflow-visible">
-          {pairings.map((p) => (
-            <article
-              key={p.slug}
-              className="flex w-72 shrink-0 snap-start flex-col gap-3 rounded-2xl bg-white p-3 shadow-warm ring-1 ring-espresso/5 md:w-auto"
-            >
-              <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
-                <Image src={p.image} alt={p.name} fill sizes="(min-width:768px) 400px, 288px" className="object-cover" />
-              </div>
-              <div className="flex items-start justify-between gap-2 px-1">
-                <div>
-                  <p className="text-title-md text-ink">{p.name}</p>
-                  <p className="text-body-sm text-ink-soft">{p.description}</p>
-                </div>
-                <span className="text-title-md font-semibold text-ink tabular">{formatPrice(p.price)}</span>
-              </div>
-              <AddPairingButton item={p} />
-            </article>
-          ))}
-        </div>
-      </section>
     </div>
   )
 }

@@ -3,20 +3,21 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowRight, CircleCheck, Loader2, Lock, Mail, ShieldCheck } from "lucide-react"
+import { ArrowRight, CircleCheck, Loader2, Lock, Phone, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 
-import { AuthCard, AuthHeading, Field, isEmail, PasswordField, SocialButtons } from "@/components/auth/auth-fields"
+import { AuthCard, AuthHeading, Field, PasswordField, SocialButtons } from "@/components/auth/auth-fields"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { markSignedIn } from "@/lib/auth"
 
-type Errors = { email?: string; password?: string }
+type Errors = { phone?: string; password?: string }
 
 export function SignInForm() {
   const router = useRouter()
-  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
   const [password, setPassword] = useState("")
   const [remember, setRemember] = useState(true)
   const [errors, setErrors] = useState<Errors>({})
@@ -24,8 +25,8 @@ export function SignInForm() {
 
   function validate(): Errors {
     const e: Errors = {}
-    if (!isEmail(email)) e.email = "Enter the email linked to your Roastery ID."
-    if (!password) e.password = "Enter your password."
+    if (phone.replace(/\D/g, "").length < 7) e.phone = "សូមបញ្ចូលលេខទូរស័ព្ទដែលភ្ជាប់ជាមួយលេខសម្គាល់ហាងរបស់អ្នក។"
+    if (!password) e.password = "សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នក។"
     return e
   }
 
@@ -38,7 +39,8 @@ export function SignInForm() {
     setStatus("loading")
     setTimeout(() => {
       setStatus("done")
-      toast.success("Welcome back to Aura", { description: remember ? "You'll stay signed in on this device." : undefined })
+      markSignedIn()
+      toast.success("សូមស្វាគមន៍ត្រឡប់មកវិញ", { description: remember ? "អ្នកនឹងនៅតែចូលប្រើបានលើឧបករណ៍នេះ។" : undefined })
       setTimeout(() => router.push("/"), 600)
     }, 1200)
   }
@@ -48,32 +50,32 @@ export function SignInForm() {
       <form noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
         <AuthHeading
           icon={ShieldCheck}
-          badge="Secure Roastery Access"
-          title="Welcome Back to Aura"
-          description="Sign in to manage your roast subscriptions, harvest reservations, and Botanica Gold perks."
+          badge="ការចូលប្រើប្រាស់ដោយសុវត្ថិភាព"
+          title="សូមស្វាគមន៍ត្រឡប់មកកាន់ Free Shop Coffee"
+          description="ចូលគណនីដើម្បីគ្រប់គ្រងកាហ្វេ របស់អ្នក"
         />
 
-        <SocialButtons verb="Sign in" divider="Or sign in with email" />
+        <SocialButtons verb="Sign in" divider="Or sign in with phone number" />
 
         <div className="flex flex-col gap-4">
           <Field
-            id="email"
-            label="Email Address"
-            icon={Mail}
-            type="email"
-            autoComplete="email"
-            placeholder="elena.rostova@botanica.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
-            hint={<span className="text-label-sm font-semibold text-amber uppercase">Roastery ID</span>}
+            id="phone"
+            label="លេខទូរស័ព្ទ"
+            icon={Phone}
+            type="tel"
+            autoComplete="tel"
+            placeholder="+855 12 345 678"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            error={errors.phone}
+            hint={<span className="text-label-sm font-semibold text-amber uppercase">លេខសម្គាល់ហាង</span>}
           />
           <PasswordField
             id="password"
-            label="Password"
+            label="ពាក្យសម្ងាត់"
             icon={Lock}
             autoComplete="current-password"
-            placeholder="Your password"
+            placeholder="ពាក្យសម្ងាត់របស់អ្នក"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={errors.password}
@@ -81,9 +83,9 @@ export function SignInForm() {
               <button
                 type="button"
                 className="text-label-md font-semibold text-amber hover:underline"
-                onClick={() => toast("Password reset", { description: "We'll email you a reset link once accounts are live." })}
+                onClick={() => toast("កំណត់ពាក្យសម្ងាត់ឡើងវិញ", { description: "យើងនឹងផ្ញើតំណកំណត់ពាក្យសម្ងាត់ឡើងវិញតាមអ៊ីមែល នៅពេលប្រព័ន្ធគណនីដំណើរការ។" })}
               >
-                Forgot password?
+                ភ្លេចពាក្យសម្ងាត់?
               </button>
             }
           />
@@ -95,32 +97,32 @@ export function SignInForm() {
             onCheckedChange={setRemember}
             className="size-5 data-checked:border-amber data-checked:bg-amber"
           />
-          Keep me signed in on this roastery device
+          រក្សាការចូលប្រើរបស់ខ្ញុំនៅលើឧបករណ៍នេះ
         </Label>
 
         <Button type="submit" disabled={status !== "idle"} className="h-auto min-h-12 w-full gap-2 rounded-xl py-3 text-title-md whitespace-normal hover:bg-amber">
           {status === "idle" && (
             <>
-              Sign In to Your Account <ArrowRight className="size-4" />
+              ចូលប្រើគណនីរបស់អ្នក <ArrowRight className="size-4" />
             </>
           )}
           {status === "loading" && (
             <>
-              <Loader2 className="size-4 animate-spin" /> Authenticating…
+              <Loader2 className="size-4 animate-spin" /> កំពុងផ្ទៀងផ្ទាត់...
             </>
           )}
           {status === "done" && (
             <>
-              <CircleCheck className="size-4" /> Authenticated
+              <CircleCheck className="size-4" /> បានផ្ទៀងផ្ទាត់រួចរាល់
             </>
           )}
         </Button>
 
         <Separator />
         <p className="text-center text-body-md text-balance text-ink-soft">
-          New to Aura Roasters?{" "}
+          អ្នកមិនទាន់មានគណនីមែនទេ?{" "}
           <Link href="/sign-up" className="font-semibold text-amber underline-offset-4 hover:underline">
-            Create an account &amp; join Botanica Club
+            បង្កើតគណនីសម្រាប់ហាង
           </Link>
         </p>
       </form>

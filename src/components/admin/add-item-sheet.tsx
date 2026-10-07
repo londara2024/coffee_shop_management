@@ -16,42 +16,44 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { catalog, slugify, slugTaken, type CustomProduct } from "@/lib/catalog"
-import { categories, pairings, products, type CategoryId, type Product, type Tone } from "@/lib/data"
+import { categories, formatPrice, pairings, products, type CategoryId, type Product, type Tone } from "@/lib/data"
+import { resizeImage } from "@/lib/image"
 import { cn } from "@/lib/utils"
+import { defaultToppings as STANDARD_TOPPINGS } from "@/components/shop/product-configurator"
 
-const DRINKS: CategoryId[] = ["coffee", "tea", "smoothies"]
+const DRINKS: CategoryId[] = ["coffee", "tea"]
 const MAX_TAGS = 3
 const PLACEHOLDER = "/images/emblem.jpg"
 
 /** Photos already in /public/images that make sense as menu imagery. */
 const library = [...new Set([...products.map((p) => p.image), ...pairings.map((p) => p.image), "/images/latte-hero.jpg"])]
 
-const toneLabel: Record<Tone, string> = { forest: "Green", amber: "Amber", neutral: "Neutral" }
+const toneLabel: Record<Tone, string> = { forest: "បៃតង", amber: "លឿង", neutral: "ធម្មតា" }
 
 type Form = {
   name: string
   category: CategoryId
   kicker: string
-  price: string
-  kcal: string
+  size1: string
+  size2: string
+  size3: string
   badge: string
-  imageTag: string
   description: string
   image: string | null
   tags: { label: string; tone: Tone }[]
   live: boolean
   customizable: boolean
 }
-type Errors = Partial<Record<"name" | "price" | "kcal" | "image" | "tags", string>>
+type Errors = Partial<Record<"name" | "price" | "image" | "tags", string>>
 
 const blank = (category: CategoryId): Form => ({
   name: "",
   category,
   kicker: "",
-  price: "",
-  kcal: "",
+  size1: "",
+  size2: "",
+  size3: "",
   badge: "",
-  imageTag: "",
   description: "",
   image: null,
   tags: [],
@@ -59,27 +61,6 @@ const blank = (category: CategoryId): Form => ({
   customizable: DRINKS.includes(category),
 })
 
-/** Downscale an uploaded photo to ≤800px JPEG so it fits comfortably in localStorage. */
-function resizeImage(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file)
-    const img = new window.Image()
-    img.onload = () => {
-      const scale = Math.min(1, 800 / Math.max(img.width, img.height))
-      const canvas = document.createElement("canvas")
-      canvas.width = Math.round(img.width * scale)
-      canvas.height = Math.round(img.height * scale)
-      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height)
-      URL.revokeObjectURL(url)
-      resolve(canvas.toDataURL("image/jpeg", 0.82))
-    }
-    img.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error("unreadable image"))
-    }
-    img.src = url
-  })
-}
 
 function FieldLabel({ htmlFor, children, hint }: { htmlFor?: string; children: React.ReactNode; hint?: string }) {
   return (
@@ -118,6 +99,7 @@ export function AddItemSheet({
   const [errors, setErrors] = useState<Errors>({})
   const [tagDraft, setTagDraft] = useState("")
   const [tagTone, setTagTone] = useState<Tone>("forest")
+  const [standardToppings, setStandardToppings] = useState<string[]>([])
   const fileRef = useRef<HTMLInputElement>(null)
 
   const set = <K extends keyof Form>(key: K, value: Form[K]) => {
@@ -126,13 +108,19 @@ export function AddItemSheet({
     if (key in errors) setErrors((e) => ({ ...e, [key]: undefined }))
   }
   const drink = DRINKS.includes(form.category)
+  const category = categories.find((c) => c.id === form.category)!
+  const sizePriceNums = [Number(form.size1) || 0, Number(form.size2) || 0, Number(form.size3) || 0] as [number, number, number]
+  const sizePrices = sizePriceNums.some(Boolean) ? sizePriceNums : undefined
+  const toppingsForProduct = standardToppings.length
+    ? STANDARD_TOPPINGS.filter((t) => standardToppings.includes(t.id))
+    : undefined
 
   function addTag() {
     const label = tagDraft.trim()
     if (!label) return
-    if (form.tags.length >= MAX_TAGS) return setErrors((e) => ({ ...e, tags: `Up to ${MAX_TAGS} tags per item.` }))
+    if (form.tags.length >= MAX_TAGS) return setErrors((e) => ({ ...e, tags: `អនុញ្ញាតតែ ${MAX_TAGS} ស្លាកក្នុងមួយទំនិញ។` }))
     if (form.tags.some((t) => t.label.toLowerCase() === label.toLowerCase()))
-      return setErrors((e) => ({ ...e, tags: "That tag is already added." }))
+      return setErrors((e) => ({ ...e, tags: "ស្លាកនេះត្រូវបានបន្ថែមរួចហើយ។" }))
     set("tags", [...form.tags, { label, tone: tagTone }])
     setTagDraft("")
     setErrors((e) => ({ ...e, tags: undefined }))
@@ -140,26 +128,25 @@ export function AddItemSheet({
 
   async function onUpload(file: File | undefined) {
     if (!file) return
-    if (!file.type.startsWith("image/")) return setErrors((e) => ({ ...e, image: "Choose an image file (JPG, PNG, WebP)." }))
-    if (file.size > 8 * 1024 * 1024) return setErrors((e) => ({ ...e, image: "Keep photos under 8 MB." }))
+    if (!file.type.startsWith("image/")) return setErrors((e) => ({ ...e, image: "សូមជ្រើសរើសឯកសាររូបភាព (JPG, PNG, WebP)។" }))
+    if (file.size > 8 * 1024 * 1024) return setErrors((e) => ({ ...e, image: "សូមប្រើរូបភាពទំហំក្រោម ៨ MB។" }))
     try {
       set("image", await resizeImage(file))
       setErrors((e) => ({ ...e, image: undefined }))
     } catch {
-      setErrors((e) => ({ ...e, image: "That image couldn't be read — try another file." }))
+      setErrors((e) => ({ ...e, image: "មិនអាចអានរូបភាពនេះបានទេ — សូមសាកល្បងឯកសារផ្សេង។" }))
     }
   }
 
   function validate(): Errors {
     const e: Errors = {}
     const name = form.name.trim()
-    if (name.length < 3) e.name = "Give the item a name (at least 3 characters)."
-    else if (slugTaken(slugify(name))) e.name = "An item with this name already exists."
-    const price = Number(form.price)
-    if (!form.price || !Number.isFinite(price) || price <= 0) e.price = "Enter a price above $0."
-    else if (price > 999) e.price = "That price looks too high."
-    if (form.kcal && (!Number.isInteger(Number(form.kcal)) || Number(form.kcal) < 0)) e.kcal = "Use a whole number."
-    if (!form.image) e.image = "Pick a photo from the library or upload one."
+    if (name.length < 3) e.name = "សូមដាក់ឈ្មោះទំនិញ (យ៉ាងតិច ៣ តួអក្សរ)។"
+    else if (slugTaken(slugify(name))) e.name = "មានទំនិញឈ្មោះនេះរួចហើយ។"
+    const price = Number(form.size2)
+    if (!form.size2 || !Number.isFinite(price) || price <= 0) e.price = "សូមបញ្ចូលតម្លៃធម្មតាលើសពី $0។"
+    else if (price > 999) e.price = "តម្លៃនេះហាក់ដូចជាខ្ពស់ពេក។"
+    if (!form.image) e.image = "សូមជ្រើសរើសរូបភាពពីបណ្ណាល័យ ឬបញ្ចូលថ្មី។"
     return e
   }
 
@@ -168,27 +155,26 @@ export function AddItemSheet({
     const e = validate()
     setErrors(e)
     if (Object.keys(e).length) {
-      toast.error("Check the highlighted fields")
+      toast.error("សូមពិនិត្យមើលចន្លោះដែលបានបញ្ជាក់")
       return
     }
-    const category = categories.find((c) => c.id === form.category)!
     const item = catalog.add({
       slug: slugify(form.name.trim()),
       name: form.name.trim(),
       category: form.category,
-      kicker: form.kicker.trim() || "New Arrival",
-      price: Math.round(Number(form.price) * 100) / 100,
-      kcal: form.kcal ? Number(form.kcal) : 0,
+      kicker: form.kicker.trim() || "ទំនិញថ្មី",
+      price: Math.round(Number(form.size2) * 100) / 100,
+      sizePrices,
       image: form.image!,
-      badge: form.badge.trim() || category.label,
-      imageTag: form.imageTag.trim() || undefined,
-      tags: form.tags.length ? form.tags : [{ label: "New", tone: "amber" }],
+      badge: form.badge.trim() || (category.labelKm ?? category.label),
+      tags: form.tags.length ? form.tags : [{ label: "ថ្មី", tone: "amber" }],
+      toppings: toppingsForProduct,
       description: form.description.trim() || undefined,
       customizable: drink && form.customizable,
       live: form.live,
     })
-    toast.success(`${item.name} added to ${category.label}`, {
-      description: item.live ? "Live on the web menu now." : "Saved as hidden (86'd) — switch it live when ready.",
+    toast.success(`បានបន្ថែម ${item.name} ទៅក្នុង ${category.labelKm ?? category.label}`, {
+      description: item.live ? "កំពុងបង្ហាញនៅលើម៉ឺនុយគេហទំព័រហើយឥឡូវនេះ។" : "បានរក្សាទុកជាលាក់ (ដកចេញ) — សូមបើកបង្ហាញនៅពេលត្រៀមរួច។",
     })
     onCreated(item)
     onOpenChange(false)
@@ -197,15 +183,15 @@ export function AddItemSheet({
   // Preview mirrors exactly what the customer menu card will render.
   const preview: Product = {
     slug: "preview",
-    name: form.name.trim() || "New menu item",
+    name: form.name.trim() || "ធាតុម៉ឺនុយថ្មី",
     category: form.category,
-    kicker: form.kicker.trim() || "New Arrival",
-    price: Number(form.price) > 0 ? Number(form.price) : 0,
-    kcal: Number(form.kcal) || 0,
+    kicker: form.kicker.trim() || "ទំនិញថ្មី",
+    price: Number(form.size2) > 0 ? Number(form.size2) : 0,
+    sizePrices,
     image: form.image ?? PLACEHOLDER,
-    badge: form.badge.trim() || categories.find((c) => c.id === form.category)!.label,
-    imageTag: form.imageTag.trim() || undefined,
-    tags: form.tags.length ? form.tags : [{ label: "New", tone: "amber" }],
+    badge: form.badge.trim() || (category.labelKm ?? category.label),
+    tags: form.tags.length ? form.tags : [{ label: "ថ្មី", tone: "amber" }],
+    toppings: toppingsForProduct,
   }
 
   return (
@@ -213,29 +199,32 @@ export function AddItemSheet({
       <SheetContent side="right" className="w-full gap-0 bg-milk p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-xl">
         <form noValidate onSubmit={submit} className="flex h-full flex-col">
           <div className="border-b bg-white px-5 py-4 pr-12 sm:px-6">
-            <p className="eyebrow">Store Menu Operations</p>
-            <SheetTitle className="mt-0.5 font-serif text-headline-sm text-ink">Add New Menu Item</SheetTitle>
+            <p className="eyebrow">ប្រតិបត្តិការម៉ឺនុយហាង</p>
+            <SheetTitle className="mt-0.5 font-serif text-headline-sm text-ink">បន្ថែមម្ហូបថ្មី</SheetTitle>
             <SheetDescription className="text-body-sm text-ink-soft">
-              Create a product card for the web menu & POS. Fields marked * are required.
+              បង្កើតកាតទំនិញសម្រាប់ម៉ឺនុយគេហទំព័រ និង POS។ វាលដែលមានសញ្ញា * ត្រូវបំពេញ។
             </SheetDescription>
           </div>
 
           <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-5 py-5 sm:px-6">
             <section className="flex flex-col gap-2">
-              <p className="eyebrow text-ink-soft">Menu card preview</p>
+              <p className="eyebrow text-ink-soft">ការមើលជាមុនកាតម៉ឺនុយ</p>
               <div inert className="pointer-events-none">
                 <ProductCard product={preview} />
               </div>
+              <p className="text-label-sm text-ink-soft">
+                ចំណងជើងរង និងទំហំតម្លៃ មិនបង្ហាញទីនេះទេ — ពួកវានឹងបង្ហាញនៅលើទំព័រលម្អិតរបស់ទំនិញ។
+              </p>
             </section>
 
             <section className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <FieldLabel htmlFor="item-name">Item name *</FieldLabel>
+                <FieldLabel htmlFor="item-name">ឈ្មោះទំនិញ *</FieldLabel>
                 <Input
                   id="item-name"
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
-                  placeholder="e.g. Maple Pecan Cold Brew"
+                  placeholder="ឧទាហរណ៍៖ កាហ្វេត្រជាក់ម្របល៍ភីខិន"
                   aria-invalid={errors.name ? true : undefined}
                   aria-describedby="item-name-error"
                   className={input}
@@ -245,89 +234,102 @@ export function AddItemSheet({
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <FieldLabel>Category *</FieldLabel>
+                  <FieldLabel>ប្រភេទ *</FieldLabel>
                   <Select
                     value={form.category}
-                    items={Object.fromEntries(categories.map((c) => [c.id, c.label]))}
+                    items={Object.fromEntries(categories.map((c) => [c.id, c.labelKm ?? c.label]))}
                     onValueChange={(v) => {
                       if (!v) return
                       const category = v as CategoryId
                       setForm((f) => ({ ...f, category, customizable: DRINKS.includes(category) }))
                     }}
                   >
-                    <SelectTrigger aria-label="Category" className="h-10 w-full rounded-lg bg-oat-light">
+                    <SelectTrigger aria-label="ប្រភេទ" className="h-10! w-full rounded-lg bg-oat-light">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((c) => (
                         <SelectItem key={c.id} value={c.id}>
-                          {c.label}
+                          {c.labelKm ?? c.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <FieldLabel htmlFor="item-kicker" hint="Shown above the name">
-                    Subtitle
+                  <FieldLabel htmlFor="item-kicker" hint="បង្ហាញនៅលើទំព័រទំនិញ">
+                    ចំណងជើងរង
                   </FieldLabel>
                   <Input
                     id="item-kicker"
                     value={form.kicker}
                     onChange={(e) => set("kicker", e.target.value)}
-                    placeholder="e.g. Seasonal Brew"
+                    placeholder="ឧទាហរណ៍៖ កាហ្វេតាមរដូវ"
                     className={input}
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <FieldLabel htmlFor="item-price">Price ($) *</FieldLabel>
-                  <Input
-                    id="item-price"
-                    inputMode="decimal"
-                    value={form.price}
-                    onChange={(e) => set("price", e.target.value.replace(/[^0-9.]/g, ""))}
-                    placeholder="6.50"
-                    aria-invalid={errors.price ? true : undefined}
-                    aria-describedby="item-price-error"
-                    className={cn(input, "tabular")}
-                  />
-                  <ErrorText id="item-price-error">{errors.price}</ErrorText>
+              <div className="flex flex-col gap-2">
+                <FieldLabel htmlFor="item-size2" hint="បង្ហាញនៅលើទំព័រទំនិញ">
+                  ទំហំតម្លៃ ($) *
+                </FieldLabel>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-label-sm text-ink-soft">តូច</span>
+                    <Input
+                      aria-label="តម្លៃ ទំហំតូច"
+                      inputMode="decimal"
+                      value={form.size1}
+                      onChange={(e) => set("size1", e.target.value.replace(/[^0-9.]/g, ""))}
+                      placeholder="6.00"
+                      className={cn(input, "tabular")}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-label-sm text-ink-soft">ធម្មតា</span>
+                    <Input
+                      id="item-size2"
+                      inputMode="decimal"
+                      value={form.size2}
+                      onChange={(e) => set("size2", e.target.value.replace(/[^0-9.]/g, ""))}
+                      placeholder="6.50"
+                      aria-invalid={errors.price ? true : undefined}
+                      aria-describedby="item-price-error"
+                      className={cn(input, "tabular")}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-label-sm text-ink-soft">ធំ</span>
+                    <Input
+                      aria-label="តម្លៃ ទំហំធំ"
+                      inputMode="decimal"
+                      value={form.size3}
+                      onChange={(e) => set("size3", e.target.value.replace(/[^0-9.]/g, ""))}
+                      placeholder="7.00"
+                      className={cn(input, "tabular")}
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <FieldLabel htmlFor="item-kcal">Calories</FieldLabel>
-                  <Input
-                    id="item-kcal"
-                    inputMode="numeric"
-                    value={form.kcal}
-                    onChange={(e) => set("kcal", e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder="180"
-                    aria-invalid={errors.kcal ? true : undefined}
-                    aria-describedby="item-kcal-error"
-                    className={cn(input, "tabular")}
-                  />
-                  <ErrorText id="item-kcal-error">{errors.kcal}</ErrorText>
-                </div>
+                <ErrorText id="item-price-error">{errors.price}</ErrorText>
               </div>
 
               <div className="flex flex-col gap-2">
-                <FieldLabel htmlFor="item-description" hint="Shown on the product page">
-                  Description
+                <FieldLabel htmlFor="item-description" hint="បង្ហាញនៅលើទំព័រទំនិញ">
+                  ការពិពណ៌នា
                 </FieldLabel>
                 <Textarea
                   id="item-description"
                   value={form.description}
                   onChange={(e) => set("description", e.target.value)}
-                  placeholder="Tasting notes, origin, how it's prepared…"
+                  placeholder="កំណត់ចំណាំរសជាតិ ដើមកំណើត វិធីរៀបចំ…"
                   className="min-h-20 rounded-lg bg-oat-light focus-visible:border-amber-bright"
                 />
               </div>
             </section>
 
             <section className="flex flex-col gap-3">
-              <FieldLabel hint={errors.image ? undefined : "From the library, or upload"}>Photo *</FieldLabel>
+              <FieldLabel hint={errors.image ? undefined : "ពីបណ្ណាល័យ ឬបញ្ចូលថ្មី"}>រូបភាព *</FieldLabel>
               <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
                 <button
                   type="button"
@@ -338,7 +340,7 @@ export function AddItemSheet({
                   )}
                 >
                   {form.image?.startsWith("data:") ? <Check className="size-5" /> : <ImageUp className="size-5" />}
-                  {form.image?.startsWith("data:") ? "Uploaded" : "Upload"}
+                  {form.image?.startsWith("data:") ? "បានបញ្ចូល" : "បញ្ចូលរូបភាព"}
                 </button>
                 {library.map((src) => (
                   <button
@@ -348,7 +350,7 @@ export function AddItemSheet({
                       set("image", src)
                       setErrors((e) => ({ ...e, image: undefined }))
                     }}
-                    aria-label={`Use photo ${src.split("/").pop()}`}
+                    aria-label={`ប្រើរូបភាព ${src.split("/").pop()}`}
                     aria-pressed={form.image === src}
                     className={cn(
                       "relative aspect-square overflow-hidden rounded-lg ring-offset-2 ring-offset-milk transition",
@@ -375,37 +377,60 @@ export function AddItemSheet({
                 }}
               />
               <ErrorText id="item-image-error">{errors.image}</ErrorText>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="flex flex-col gap-2">
-                  <FieldLabel htmlFor="item-badge" hint="Top-left of photo">
-                    Photo badge
+                  <FieldLabel htmlFor="item-badge" hint="ជ្រុងឆ្វេងខាងលើរបស់រូបភាព">
+                    សីតុណ្ហភាព
                   </FieldLabel>
-                  <Input
-                    id="item-badge"
-                    value={form.badge}
-                    onChange={(e) => set("badge", e.target.value)}
-                    placeholder="e.g. Hot / Iced"
-                    className={input}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <FieldLabel htmlFor="item-imagetag" hint="Bottom-left of photo">
-                    Photo note
-                  </FieldLabel>
-                  <Input
-                    id="item-imagetag"
-                    value={form.imageTag}
-                    onChange={(e) => set("imageTag", e.target.value)}
-                    placeholder="e.g. Single Origin"
-                    className={input}
-                  />
+                  <Select value={form.badge} onValueChange={(v) => v && set("badge", v as string)}>
+                    <SelectTrigger id="item-badge" className="h-10! w-full rounded-lg bg-oat-light">
+                      <SelectValue placeholder="ជ្រើសរើសសីតុណ្ហភាព" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["ក្ដៅ", "ត្រជាក់", "ក្ដៅ/ត្រជាក់"].map((b) => (
+                        <SelectItem key={b} value={b}>
+                          {b}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </section>
 
             <section className="flex flex-col gap-3">
+              <FieldLabel htmlFor="item-topping" hint="បង្ហាញក្នុងទំព័រទំនិញជាគ្រឿងលម្អជម្រើស">
+                គ្រឿងលម្អ និងសារធាតុបន្ថែម
+              </FieldLabel>
+              <div className="flex flex-col gap-1.5">
+                {STANDARD_TOPPINGS.map((t) => {
+                  const checked = standardToppings.includes(t.id)
+                  return (
+                    <Label
+                      key={t.id}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-label-md font-normal",
+                        checked ? "bg-amber-soft/40" : "bg-oat-light hover:bg-oat"
+                      )}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(on) =>
+                          setStandardToppings((xs) => (on ? [...xs, t.id] : xs.filter((x) => x !== t.id)))
+                        }
+                        className="data-checked:border-amber data-checked:bg-amber"
+                      />
+                      <span className="flex-1 text-ink">{t.labelKm ?? t.label}</span>
+                      <span className="text-label-sm font-bold text-amber">{t.delta ? `+${formatPrice(t.delta)}` : "រួមបញ្ចូល"}</span>
+                    </Label>
+                  )
+                })}
+              </div>
+            </section>
+
+            <section className="hidden flex-col gap-3">
               <FieldLabel htmlFor="item-tag" hint={`${form.tags.length}/${MAX_TAGS}`}>
-                Tasting & dietary tags
+                ស្លាករសជាតិ និងរបបអាហារ
               </FieldLabel>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Input
@@ -418,7 +443,7 @@ export function AddItemSheet({
                       addTag()
                     }
                   }}
-                  placeholder="e.g. Vegan, Signature"
+                  placeholder="ឧទាហរណ៍៖ អាហារបួស, ពិសេស"
                   className={cn(input, "flex-1")}
                 />
                 <div className="flex gap-2">
@@ -432,7 +457,7 @@ export function AddItemSheet({
                       <ToggleGroupItem
                         key={t}
                         value={t}
-                        aria-label={`${toneLabel[t]} tag`}
+                        aria-label={`ស្លាក ${toneLabel[t]}`}
                         className="h-8 px-2 text-label-md aria-pressed:bg-white aria-pressed:shadow-sm"
                       >
                         <span
@@ -447,7 +472,7 @@ export function AddItemSheet({
                       </ToggleGroupItem>
                     ))}
                   </ToggleGroup>
-                  <Button type="button" variant="secondary" size="icon-lg" className="size-10 bg-oat" aria-label="Add tag" onClick={addTag}>
+                  <Button type="button" variant="secondary" size="icon-lg" className="size-10 bg-oat" aria-label="បន្ថែមស្លាក" onClick={addTag}>
                     <Plus />
                   </Button>
                 </div>
@@ -467,7 +492,7 @@ export function AddItemSheet({
                       {t.label}
                       <button
                         type="button"
-                        aria-label={`Remove ${t.label}`}
+                        aria-label={`លុប ${t.label}`}
                         onClick={() => set("tags", form.tags.filter((x) => x.label !== t.label))}
                         className="rounded p-0.5 hover:bg-black/5"
                       >
@@ -477,7 +502,7 @@ export function AddItemSheet({
                   ))}
                 </ul>
               ) : (
-                <p className="text-label-md text-ink-soft">No tags yet — a “New” tag is shown until you add one.</p>
+                <p className="text-label-md text-ink-soft">មិនទាន់មានស្លាកទេ — ស្លាក “ថ្មី” នឹងបង្ហាញរហូតទាល់តែអ្នកបន្ថែមមួយ។</p>
               )}
               <ErrorText id="item-tag-error">{errors.tags}</ErrorText>
             </section>
@@ -485,21 +510,21 @@ export function AddItemSheet({
             <section className="flex flex-col gap-2">
               <Label className="flex cursor-pointer items-center gap-3 rounded-xl bg-white p-3 font-normal ring-1 ring-border">
                 <span className="flex-1">
-                  <span className="block text-title-md text-ink">Live on web menu</span>
-                  <span className="block text-body-sm text-ink-soft">Off saves it as 86&apos;d (hidden from customers).</span>
+                  <span className="block text-title-md text-ink">បង្ហាញនៅលើម៉ឺនុយគេហទំព័រ</span>
+                  <span className="block text-body-sm text-ink-soft">បិទ នឹងរក្សាទុកជាដកចេញ (លាក់ពីអតិថិជន)។</span>
                 </span>
                 <Switch checked={form.live} onCheckedChange={(v) => set("live", v)} className="data-checked:bg-forest" />
               </Label>
               {drink ? (
-                <Label className="flex cursor-pointer items-center gap-3 rounded-xl bg-white p-3 font-normal ring-1 ring-border">
+                <Label className="hidden cursor-pointer items-center gap-3 rounded-xl bg-white p-3 font-normal ring-1 ring-border">
                   <Checkbox
                     checked={form.customizable}
                     onCheckedChange={(v) => set("customizable", v)}
                     className="size-5 data-checked:border-amber data-checked:bg-amber"
                   />
                   <span className="flex-1">
-                    <span className="block text-title-md text-ink">Offer drink options</span>
-                    <span className="block text-body-sm text-ink-soft">Size, temperature, milk, toppings on the product page.</span>
+                    <span className="block text-title-md text-ink">ផ្តល់ជម្រើសភេសជ្ជៈ</span>
+                    <span className="block text-body-sm text-ink-soft">ទំហំ សីតុណ្ហភាព ទឹកដោះគោ គ្រឿងលម្អ នៅលើទំព័រទំនិញ។</span>
                   </span>
                 </Label>
               ) : null}
@@ -508,10 +533,10 @@ export function AddItemSheet({
 
           <div className="flex gap-2 border-t bg-white px-5 py-4 sm:px-6">
             <Button type="button" variant="secondary" className="h-11 rounded-lg px-5" onClick={() => onOpenChange(false)}>
-              Cancel
+              បោះបង់
             </Button>
             <Button type="submit" className="h-11 flex-1 gap-2 rounded-lg text-title-md hover:bg-amber">
-              <CirclePlus className="size-4" /> Add to Menu
+              <CirclePlus className="size-4" /> បន្ថែមទៅម៉ឺនុយ
             </Button>
           </div>
         </form>

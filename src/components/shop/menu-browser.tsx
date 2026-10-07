@@ -1,19 +1,18 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Cake, Coffee, CupSoda, Flame, Leaf, Sandwich, Search, SlidersHorizontal } from "lucide-react"
+import { Cake, Coffee, Flame, Leaf, Sandwich, Search } from "lucide-react"
 
 import { ProductCard } from "@/components/shop/product-card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAllProducts } from "@/lib/catalog"
-import { categories, filters, getProduct, type CategoryId, type Product } from "@/lib/data"
+import { categories, filterLabelsKm, filters, getProduct, type CategoryId, type Product } from "@/lib/data"
 import { cn } from "@/lib/utils"
 
 const icons: Record<CategoryId, typeof Coffee> = {
   coffee: Coffee,
   tea: Leaf,
-  smoothies: CupSoda,
   food: Sandwich,
   desserts: Cake,
 }
@@ -86,14 +85,14 @@ export function MenuBrowser() {
         )}
       >
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 pt-3 pb-2 md:px-6">
-          {/* Phones: categories & filters collapse into dropdowns so nothing runs off-screen */}
-          <div className="grid grid-cols-2 gap-2 md:hidden">
+          {/* Phones: categories collapse into a dropdown so nothing runs off-screen */}
+          <div className="grid grid-cols-1 gap-2 md:hidden">
             <Select
               value={active}
-              items={Object.fromEntries(categories.map((c) => [c.id, c.label]))}
+              items={Object.fromEntries(categories.map((c) => [c.id, c.labelKm ?? c.label]))}
               onValueChange={(v) => v && goToCategory(v as CategoryId)}
             >
-              <SelectTrigger aria-label="Category" className="h-10 w-full rounded-full border-0 bg-espresso px-4 text-label-lg font-semibold text-milk [&_svg]:text-milk">
+              <SelectTrigger aria-label="ប្រភេទ" className="h-10 w-full rounded-full border-0 bg-espresso px-4 text-label-lg font-semibold text-milk [&_svg]:text-milk">
                 <ActiveIcon className="size-4" />
                 <SelectValue />
               </SelectTrigger>
@@ -103,36 +102,17 @@ export function MenuBrowser() {
                   return (
                     <SelectItem key={c.id} value={c.id} className="py-2">
                       <Icon className="size-4 text-amber" />
-                      <span className="flex-1">{c.label}</span>
+                      <span className="flex-1">{c.labelKm ?? c.label}</span>
                       <span className="rounded-full bg-oat-deeper px-1.5 text-label-sm text-ink-soft">{c.count}</span>
                     </SelectItem>
                   )
                 })}
               </SelectContent>
             </Select>
-            <Select value={filter} onValueChange={(v) => v && setFilter(v as string)}>
-              <SelectTrigger
-                aria-label="Filter"
-                className={cn(
-                  "h-10 w-full rounded-full border-0 px-4 text-label-md font-bold",
-                  filter === filters[0] ? "bg-oat text-ink" : "bg-amber-soft text-[#2e1500]"
-                )}
-              >
-                <SlidersHorizontal className="size-4 text-amber" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {filters.map((f) => (
-                  <SelectItem key={f} value={f} className="py-2">
-                    {f}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="hidden items-center gap-3 md:flex">
-            <nav className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none" aria-label="Categories">
+            <nav className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none" aria-label="ប្រភេទម៉ឺនុយ">
               {categories.map((c) => {
                 const Icon = icons[c.id]
                 const on = active === c.id
@@ -147,7 +127,7 @@ export function MenuBrowser() {
                     )}
                   >
                     <Icon className="size-4" />
-                    {c.label}
+                    {c.labelKm ?? c.label}
                     <span
                       className={cn(
                         "rounded-full px-1.5 py-0.5 text-label-sm",
@@ -165,7 +145,7 @@ export function MenuBrowser() {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search roasts, botanicals, treats…"
+                placeholder="ស្វែងរកកាហ្វេគ្រាប់ដុត ភេសជ្ជៈរុក្ខជាតិ និងបង្អែម…"
                 className="h-9 rounded-full border-transparent bg-oat pl-9 focus-visible:border-amber-bright"
               />
             </div>
@@ -175,7 +155,7 @@ export function MenuBrowser() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search roasts, botanicals, treats…"
+              placeholder="ស្វែងរកកាហ្វេគ្រាប់ដុត ភេសជ្ជៈរុក្ខជាតិ និងបង្អែម…"
               className="h-9 rounded-full border-transparent bg-oat pl-9"
             />
           </div>
@@ -190,7 +170,7 @@ export function MenuBrowser() {
                   filter === f ? "bg-amber-soft text-[#2e1500] shadow-sm" : "bg-oat text-ink hover:bg-oat-deep"
                 )}
               >
-                {f}
+                {filterLabelsKm[f] ?? f}
               </button>
             ))}
           </div>
@@ -202,16 +182,22 @@ export function MenuBrowser() {
           <section className="flex flex-col gap-4">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <span className="eyebrow">Limited Harvest Edition</span>
-                <h2 className="mt-1 font-serif text-headline-sm text-ink sm:text-headline-md">
-                  Seasonal Botanicals &amp; Reserve Roasts
+                <h2 className="mt-1 font-sans font-bold text-headline-sm text-ink sm:text-headline-md">
+                  កាហ្វេជាដុតពិសេស
                 </h2>
               </div>
-              <span className="hidden text-body-sm text-ink-soft sm:inline">Handcrafted in micro-batches</span>
             </div>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
-              <ProductCard product={spotlight[0]} feature featureLabel={{ text: "Barista Choice", variant: "dark" }} />
-              <ProductCard product={spotlight[1]} feature featureLabel={{ text: "Autumn Special", variant: "amber" }} />
+              <ProductCard
+                product={spotlight[0]}
+                feature
+                featureLabel={{ text: "ជម្រើសបារីស្តា", variant: "dark" }}
+              />
+              <ProductCard
+                product={spotlight[1]}
+                feature
+                featureLabel={{ text: "ពិសេសរដូវស្លឹកឈើជ្រុះ", variant: "amber" }}
+              />
             </div>
           </section>
         ) : null}
@@ -220,24 +206,29 @@ export function MenuBrowser() {
           const items = visible.filter((p) => p.category === c.id)
           if (items.length === 0) return null
           const lead = c.id === "coffee"
+          const eyebrowText = c.eyebrowKm ?? c.eyebrow
           return (
             <section key={c.id} id={`${c.id}-section`} className="flex scroll-mt-44 flex-col gap-5">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <span className="flex items-center gap-1 eyebrow">
-                    {lead ? <Flame className="size-3.5" /> : null}
-                    {c.eyebrow}
-                  </span>
+                  {eyebrowText ? (
+                    <span className="flex items-center gap-1 eyebrow">
+                      {lead ? <Flame className="size-3.5" /> : null}
+                      {eyebrowText}
+                    </span>
+                  ) : null}
                   <h2
                     className={cn(
-                      "mt-1 font-serif text-ink",
+                      "mt-1 font-sans font-bold text-ink",
                       lead ? "text-headline-lg-sm md:text-headline-lg" : "text-headline-sm sm:text-headline-md"
                     )}
                   >
-                    {c.title}
+                    {c.titleKm ?? c.title}
                   </h2>
                 </div>
-                {c.note ? <span className="hidden text-body-sm text-ink-soft sm:inline">{c.note}</span> : null}
+                {c.note ? (
+                  <span className="hidden text-body-sm text-ink-soft sm:inline">{c.noteKm ?? c.note}</span>
+                ) : null}
               </div>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
                 {items.map((p) => (
@@ -250,8 +241,8 @@ export function MenuBrowser() {
 
         {visible.length === 0 ? (
           <div className="rounded-2xl bg-oat p-10 text-center">
-            <p className="font-serif text-headline-sm text-ink">Nothing brewing for that search</p>
-            <p className="mt-1 text-body-md text-ink-soft">Try another tasting note, or clear the filter.</p>
+            <p className="font-serif text-headline-sm text-ink">រកមិនឃើញអ្វីសម្រាប់ការស្វែងរកនេះទេ</p>
+            <p className="mt-1 text-body-md text-ink-soft">សូមសាកល្បងរសជាតិផ្សេងទៀត ឬសម្អាតតម្រង។</p>
           </div>
         ) : null}
       </div>

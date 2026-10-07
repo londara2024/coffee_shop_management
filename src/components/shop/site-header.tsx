@@ -12,9 +12,9 @@ import { useCart } from "@/lib/cart"
 import { cn } from "@/lib/utils"
 
 const nav = [
-  { href: "/", label: "Menu" },
-  { href: "/checkout", label: "Checkout" },
-  { href: "/order/ACR-8942", label: "Track Order" },
+  { href: "/", label: "ម៉ឺនុយ" },
+  { href: "/checkout", label: "ការទូទាត់" },
+  { href: "/order/ACR-8942", label: "តាមដានការកម្ម៉ង់" },
 ]
 
 export function SiteHeader() {
@@ -50,13 +50,13 @@ export function SiteHeader() {
             href="/admin"
             className="mr-2 hidden rounded-md px-2 py-1 text-title-md font-medium text-ink-soft transition-colors hover:text-ink lg:block"
           >
-            Dashboard
+            ផ្ទាំងគ្រប់គ្រង
           </Link>
           <Link
             href="/sign-in"
             className="mr-2 hidden rounded-md px-2 py-1 text-title-md font-medium text-ink-soft transition-colors hover:text-ink lg:block"
           >
-            Sign In
+            ចូលគណនី
           </Link>
           <Button
             variant="ghost"
@@ -76,7 +76,7 @@ export function SiteHeader() {
               {formatPrice(subtotal)}
             </span>
           </Button>
-          <Link href="/admin" aria-label="Account" className="rounded-full p-0.5 transition-transform hover:scale-105">
+          <Link href="/admin" aria-label="គណនី" className="rounded-full p-0.5 transition-transform hover:scale-105">
             <Image
               src={customer.avatar}
               alt={customer.name}

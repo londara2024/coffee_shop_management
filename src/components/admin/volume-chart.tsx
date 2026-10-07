@@ -33,7 +33,7 @@ const data = {
 }
 
 const peaksAt = [8.5 * 60, 12.5 * 60, 15.5 * 60]
-const peakNames = ["Morning rush", "Midday spike", "Afternoon"]
+const peakNames = ["វេលាព្រឹកមមាញឹក", "កំពូលពេលថ្ងៃត្រង់", "ពេលរសៀល"]
 
 const W = 520
 const H = 230
@@ -43,7 +43,7 @@ function clock(t: number) {
   const h = Math.floor(t / 60)
   const m = t % 60
   const hh = ((h + 11) % 12) + 1
-  return `${hh}:${m.toString().padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`
+  return `${hh}:${m.toString().padStart(2, "0")} ${h < 12 ? "ព្រឹក" : "ល្ងាច"}`
 }
 
 export function VolumeChart() {
@@ -72,17 +72,17 @@ export function VolumeChart() {
         <Tabs value={view} onValueChange={(v) => setView(v as "today" | "yesterday")}>
           <TabsList className="h-9 bg-oat-deep">
             <TabsTrigger value="today" className="px-3 text-label-md">
-              Today (15m intervals)
+              ថ្ងៃនេះ (រៀងរាល់ ១៥ នាទី)
             </TabsTrigger>
             <TabsTrigger value="yesterday" className="px-3 text-label-md">
-              Yesterday
+              ម្សិលមិញ
             </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
       <div className="relative">
-        <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={`Orders per 15 minutes, ${view}`}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={`ការកម្ម៉ង់ក្នុងរយៈពេល ១៥ នាទី, ${view === "today" ? "ថ្ងៃនេះ" : "ម្សិលមិញ"}`}>
           <defs>
             <linearGradient id="volFill" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0%" stopColor="#8d4f06" stopOpacity="0.22" />
@@ -139,13 +139,13 @@ export function VolumeChart() {
             style={{ left: `${(x(hovered.t) / W) * 100}%` }}
           >
             <span className="block text-label-sm text-milk/70">{clock(hovered.t)}</span>
-            <b className="tabular">{hovered.orders}</b> orders
+            <b className="tabular">{hovered.orders}</b> ការកម្ម៉ង់
           </div>
         ) : null}
       </div>
 
       <table className="sr-only">
-        <caption>Orders per 15-minute interval ({view})</caption>
+        <caption>ការកម្ម៉ង់ក្នុងរយៈពេល ១៥ នាទី ({view === "today" ? "ថ្ងៃនេះ" : "ម្សិលមិញ"})</caption>
         <tbody>
           {pts.map((p) => (
             <tr key={p.t}>

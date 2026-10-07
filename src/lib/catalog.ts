@@ -40,13 +40,15 @@ function subscribe(listener: () => void) {
 }
 
 export function slugify(name: string) {
-  return name
+  const ascii = name
     .toLowerCase()
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
+  // Non-Latin names (e.g. Khmer) strip to nothing — fall back to the raw name so each stays unique.
+  return ascii || name.trim()
 }
 
 /** True when a name would collide with an existing (built-in or custom) item. */
@@ -60,7 +62,7 @@ export const catalog = {
     write([...read(), item])
     return item
   },
-  update(slug: string, patch: Partial<Pick<CustomProduct, "price" | "live">>) {
+  update(slug: string, patch: Partial<Pick<CustomProduct, "price" | "sizePrices" | "toppings" | "live">>) {
     write(read().map((p) => (p.slug === slug ? { ...p, ...patch } : p)))
   },
   remove(slug: string) {

@@ -41,10 +41,14 @@ export function CustomProductView({ slug }: { slug: string }) {
   if (!product) {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-4 py-24 text-center">
-        <p className="font-serif text-headline-md text-ink">This item isn&apos;t on the menu</p>
-        <p className="text-body-md text-ink-soft">It may have been removed or switched off by the roastery.</p>
+        <p className="font-serif text-headline-md text-ink">
+          មុខម្ហូបនេះមិនមាននៅក្នុងម៉ឺនុយទេ
+        </p>
+        <p className="text-body-md text-ink-soft">
+          វាប្រហែលជាត្រូវបានដកចេញ ឬបិទដោយហាង។
+        </p>
         <Button nativeButton={false} render={<Link href="/" />} className="mt-2 hover:bg-amber">
-          Back to the menu
+          ត្រឡប់ទៅម៉ឺនុយ
         </Button>
       </div>
     )
@@ -57,15 +61,17 @@ export function CustomProductView({ slug }: { slug: string }) {
       <Breadcrumb className="mb-4">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/" />}>Menu</BreadcrumbLink>
+            <BreadcrumbLink render={<Link href="/" />}>ម៉ឺនុយ</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href={`/#${category.id}-section`} />}>{category.label}</BreadcrumbLink>
+            <BreadcrumbLink render={<Link href={`/#${category.id}-section`} />}>
+              {category.labelKm ?? category.label}
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className="truncate">{product.name}</BreadcrumbPage>
+            <BreadcrumbPage className="truncate">{product.nameKm ?? product.name}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -74,9 +80,16 @@ export function CustomProductView({ slug }: { slug: string }) {
         <div className="flex flex-col gap-6">
           <div className="overflow-hidden rounded-3xl bg-white p-3 shadow-warm ring-1 ring-espresso/5">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-              <Image src={product.image} alt={product.name} fill priority sizes="(min-width:1024px) 640px, 100vw" className="object-cover" />
+              <Image
+                src={product.image}
+                alt={product.nameKm ?? product.name}
+                fill
+                priority
+                sizes="(min-width:1024px) 640px, 100vw"
+                className="object-cover"
+              />
               <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                <ImagePill variant="light">{product.kicker}</ImagePill>
+                <ImagePill variant="light">{product.kickerKm ?? product.kicker}</ImagePill>
                 <ImagePill>{product.badge}</ImagePill>
               </div>
               {product.imageTag ? (
@@ -90,8 +103,12 @@ export function CustomProductView({ slug }: { slug: string }) {
           </div>
           {product.description ? (
             <section className="rounded-3xl bg-oat-light p-5 ring-1 ring-espresso/5 sm:p-7">
-              <span className="eyebrow">About this {category.id === "food" || category.id === "desserts" ? "dish" : "drink"}</span>
-              <p className="mt-2 text-body-lg text-ink-soft">{product.description}</p>
+              <span className="eyebrow">
+                {category.id === "food" || category.id === "desserts"
+                  ? "អំពីមុខម្ហូបនេះ"
+                  : "អំពីភេសជ្ជៈនេះ"}
+              </span>
+              <p className="mt-2 text-body-lg text-ink-soft">{product.descriptionKm ?? product.description}</p>
             </section>
           ) : null}
         </div>

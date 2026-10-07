@@ -5,9 +5,11 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { cart } from "@/lib/cart"
-import type { pairings } from "@/lib/data"
+import { type pairings } from "@/lib/data"
 
 export function AddPairingButton({ item }: { item: (typeof pairings)[number] }) {
+  const name = item.nameKm ?? item.name
+
   return (
     <Button
       variant="secondary"
@@ -22,10 +24,10 @@ export function AddPairingButton({ item }: { item: (typeof pairings)[number] }) 
           details: item.description,
           tag: "Pairing",
         })
-        toast.success(`${item.name} added`)
+        toast.success(`បានបន្ថែម ${name}`)
       }}
     >
-      <Plus className="size-4" /> {item.cta}
+      <Plus className="size-4" /> {item.ctaKm ?? item.cta}
     </Button>
   )
 }

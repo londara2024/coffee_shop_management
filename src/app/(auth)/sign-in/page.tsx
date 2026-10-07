@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 import { SignInForm } from "@/components/auth/sign-in-form"
 
-export const metadata: Metadata = { title: "Sign In" }
+export const metadata: Metadata = { title: "ចូលប្រើគណនី" }
 
 export default function SignInPage() {
   return <SignInForm />

@@ -1,0 +1,274 @@
+
+> web@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.26.48.1:3000
+✓ Ready in 6.7s
+✓ Running next.config.ts took 431ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+
+  To migrate automatically, run:
+  npx @next/codemod@canary middleware-to-proxy .
+
+  Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /sign-in 200 in 981ms (next.js: 668ms, application-code: 312ms)
+ GET / 200 in 82ms (next.js: 36ms, proxy.ts: 9ms, application-code: 37ms)
+ GET /sign-in 200 in 427ms (next.js: 6ms, application-code: 421ms)
+ GET /sign-in 200 in 102ms (next.js: 15ms, application-code: 88ms)
+ GET /sign-in 200 in 97ms (next.js: 15ms, application-code: 82ms)
+ GET /sign-in 200 in 71ms (next.js: 10ms, application-code: 61ms)
+ GET /sign-in 200 in 62ms (next.js: 9ms, application-code: 54ms)
+ GET /sign-in 200 in 69ms (next.js: 11ms, application-code: 58ms)
+ GET /sign-in 200 in 72ms (next.js: 13ms, application-code: 59ms)
+ GET /sign-in 200 in 68ms (next.js: 8ms, application-code: 60ms)
+ GET /sign-up 200 in 1284ms (next.js: 1200ms, application-code: 84ms)
+ GET /home 404 in 540ms (next.js: 481ms, application-code: 59ms)
+ GET /sign-in 200 in 74ms (next.js: 22ms, application-code: 52ms)
+ GET / 200 in 46ms (next.js: 9ms, proxy.ts: 4ms, application-code: 33ms)
+ GET /sign-in 200 in 39ms (next.js: 9ms, application-code: 30ms)
+ GET /sign-up 200 in 27ms (next.js: 7ms, application-code: 20ms)
+ GET /sign-in 200 in 32ms (next.js: 9ms, application-code: 23ms)
+ GET / 200 in 35ms (next.js: 7ms, proxy.ts: 3ms, application-code: 25ms)
+ GET /sign-in 200 in 34ms (next.js: 6ms, application-code: 28ms)
+✓ Compiled in 112ms
+ GET /sign-in 200 in 63ms (next.js: 18ms, application-code: 45ms)
+ GET /sign-in 200 in 66ms (next.js: 8ms, application-code: 58ms)
+ GET /sign-up 200 in 84ms (next.js: 11ms, application-code: 73ms)
+ GET / 200 in 43ms (next.js: 13ms, proxy.ts: 3ms, application-code: 27ms)
+ GET /sign-in 200 in 39ms (next.js: 8ms, application-code: 31ms)
+ GET /sign-up 200 in 28ms (next.js: 7ms, application-code: 21ms)
+ GET /sign-in 200 in 34ms (next.js: 8ms, application-code: 26ms)
+✓ Compiled in 117ms
+ GET /sign-in 200 in 45ms (next.js: 13ms, application-code: 33ms)
+ GET /sign-in 200 in 70ms (next.js: 13ms, application-code: 57ms)
+ GET /sign-in 200 in 40ms (next.js: 11ms, application-code: 29ms)
+ GET /sign-in 200 in 35ms (next.js: 7ms, application-code: 28ms)
+ GET /sign-in 200 in 36ms (next.js: 8ms, application-code: 28ms)
+ GET /sign-up 200 in 39ms (next.js: 12ms, application-code: 27ms)
+ GET /sign-up 200 in 41ms (next.js: 10ms, application-code: 31ms)
+ GET /sign-in 200 in 54ms (next.js: 18ms, application-code: 36ms)
+✓ Compiled in 87ms
+ GET /sign-in 200 in 39ms (next.js: 12ms, application-code: 27ms)
+ GET /sign-in 200 in 77ms (next.js: 9ms, application-code: 68ms)
+ GET /sign-in 200 in 62ms (next.js: 7ms, application-code: 55ms)
+ GET /sign-in 200 in 60ms (next.js: 8ms, application-code: 52ms)
+✓ Compiled in 74ms
+ GET /sign-in 200 in 103ms (next.js: 26ms, application-code: 77ms)
+✓ Compiled in 89ms
+ GET /sign-in 200 in 58ms (next.js: 16ms, application-code: 41ms)
+ GET /sign-up 200 in 33ms (next.js: 10ms, application-code: 23ms)
+ GET /sign-in 200 in 38ms (next.js: 9ms, application-code: 28ms)
+ GET /sign-in 200 in 61ms (next.js: 6ms, application-code: 56ms)
+ GET /sign-in 200 in 42ms (next.js: 9ms, application-code: 32ms)
+ GET /sign-in 200 in 38ms (next.js: 7ms, application-code: 30ms)
+ GET /sign-in 200 in 58ms (next.js: 15ms, application-code: 43ms)
+✓ Compiled in 211ms
+[browser] Uncaught ReferenceError: Mail is not defined
+    at SignInForm (src/components/auth/sign-in-form.tsx:64:19)
+    at Set.forEach (<anonymous>)
+    at SignInPage (src\app\(auth)\sign-in\page.tsx:8:10)
+  62 |             id="email"
+  63 |             label="អាសយដ្ឋានអ៊ីមែល"
+> 64 |             icon={Mail}
+     |                   ^
+  65 |             type="email"
+  66 |             autoComplete="email"
+  67 |             placeholder="elena.rostova@botanica.com"
+⨯ ReferenceError: Mail is not defined
+    at SignInForm (src\components\auth\sign-in-form.tsx:64:19)
+  62 |             id="email"
+  63 |             label="អាសយដ្ឋានអ៊ីមែល"
+> 64 |             icon={Mail}
+     |                   ^
+  65 |             type="email"
+  66 |             autoComplete="email"
+  67 |             placeholder="elena.rostova@botanica.com" {
+  digest: '2060392581'
+}
+ GET /sign-in 500 in 165ms (next.js: 31ms, application-code: 135ms)
+[browser] Uncaught ReferenceError: Mail is not defined
+    at SignInForm (src/components/auth/sign-in-form.tsx:64:19)
+    at SignInPage (src\app\(auth)\sign-in\page.tsx:8:10)
+  62 |             id="email"
+  63 |             label="អាសយដ្ឋានអ៊ីមែល"
+> 64 |             icon={Mail}
+     |                   ^
+  65 |             type="email"
+  66 |             autoComplete="email"
+  67 |             placeholder="elena.rostova@botanica.com"
+ GET /sign-in 200 in 91ms (next.js: 17ms, application-code: 74ms)
+ GET /sign-in 200 in 44ms (next.js: 16ms, application-code: 27ms)
+✓ Compiled in 70ms
+ GET /sign-in 200 in 57ms (next.js: 7ms, application-code: 50ms)
+ GET /sign-up 200 in 62ms (next.js: 11ms, application-code: 51ms)
+✓ Compiled in 74ms
+ GET /sign-in 200 in 42ms (next.js: 16ms, application-code: 26ms)
+ GET /sign-in 200 in 38ms (next.js: 10ms, application-code: 28ms)
+✓ Compiled in 84ms
+ GET /sign-in 200 in 45ms (next.js: 16ms, application-code: 29ms)
+✓ Compiled in 71ms
+ GET /sign-in 200 in 54ms (next.js: 5ms, application-code: 48ms)
+ GET /sign-up 200 in 64ms (next.js: 10ms, application-code: 54ms)
+ GET /sign-in 200 in 33ms (next.js: 10ms, application-code: 24ms)
+✓ Compiled in 72ms
+ GET /sign-in 200 in 33ms (next.js: 8ms, application-code: 25ms)
+ GET /sign-up 200 in 46ms (next.js: 22ms, application-code: 24ms)
+ GET /sign-in 200 in 52ms (next.js: 5ms, application-code: 47ms)
+ GET /sign-up 200 in 53ms (next.js: 6ms, application-code: 47ms)
+ GET /sign-in 200 in 26ms (next.js: 6ms, application-code: 20ms)
+ GET /sign-up 200 in 43ms (next.js: 11ms, application-code: 32ms)
+ GET /sign-up 200 in 73ms (next.js: 27ms, application-code: 46ms)
+ GET /sign-up 200 in 82ms (next.js: 10ms, application-code: 71ms)
+ GET /sign-in 200 in 36ms (next.js: 9ms, application-code: 27ms)
+ GET /sign-in 200 in 38ms (next.js: 11ms, application-code: 27ms)
+ GET /sign-in 200 in 34ms (next.js: 7ms, application-code: 27ms)
+ GET /sign-up 200 in 45ms (next.js: 16ms, application-code: 29ms)
+ GET /sign-in 200 in 31ms (next.js: 10ms, application-code: 21ms)
+ GET /sign-up 200 in 34ms (next.js: 8ms, application-code: 26ms)
+ GET /sign-in 200 in 33ms (next.js: 9ms, application-code: 24ms)
+ GET / 200 in 42ms (next.js: 11ms, proxy.ts: 4ms, application-code: 27ms)
+ GET /sign-in 200 in 30ms (next.js: 7ms, application-code: 24ms)
+ GET / 200 in 38ms (next.js: 7ms, proxy.ts: 3ms, application-code: 27ms)
+ GET /admin 200 in 118ms (next.js: 47ms, application-code: 71ms)
+✓ Compiled in 180ms
+ GET /admin 200 in 1518ms (next.js: 849ms, application-code: 669ms)
+ GET /admin 200 in 563ms (next.js: 42ms, application-code: 521ms)
+ GET /admin 200 in 441ms (next.js: 18ms, application-code: 423ms)
+ GET /admin 200 in 477ms (next.js: 14ms, application-code: 463ms)
+ GET /admin 200 in 416ms (next.js: 16ms, application-code: 400ms)
+ GET /admin 200 in 476ms (next.js: 15ms, application-code: 461ms)
+ GET /admin 200 in 539ms (next.js: 18ms, application-code: 521ms)
+ GET /admin 200 in 517ms (next.js: 21ms, application-code: 496ms)
+ GET /admin 200 in 481ms (next.js: 19ms, application-code: 461ms)
+ GET /admin 200 in 534ms (next.js: 13ms, application-code: 521ms)
+ GET /admin 200 in 486ms (next.js: 12ms, application-code: 475ms)
+ GET /admin 200 in 510ms (next.js: 13ms, application-code: 497ms)
+ GET /admin 200 in 571ms (next.js: 15ms, application-code: 556ms)
+ GET /admin 200 in 581ms (next.js: 12ms, application-code: 569ms)
+ GET /admin 200 in 560ms (next.js: 20ms, application-code: 540ms)
+ GET /admin 200 in 512ms (next.js: 13ms, application-code: 500ms)
+ GET /admin 200 in 517ms (next.js: 12ms, application-code: 505ms)
+ GET /admin 200 in 445ms (next.js: 17ms, application-code: 428ms)
+ GET /admin 200 in 456ms (next.js: 11ms, application-code: 445ms)
+ GET /admin 200 in 521ms (next.js: 13ms, application-code: 508ms)
+ GET /admin 200 in 530ms (next.js: 17ms, application-code: 513ms)
+ GET /admin 200 in 453ms (next.js: 16ms, application-code: 438ms)
+ GET /admin 200 in 471ms (next.js: 15ms, application-code: 456ms)
+ GET /admin 200 in 381ms (next.js: 14ms, application-code: 366ms)
+ GET /admin 200 in 309ms (next.js: 12ms, application-code: 296ms)
+ GET /admin 200 in 230ms (next.js: 15ms, application-code: 215ms)
+ GET /admin 200 in 152ms (next.js: 15ms, application-code: 137ms)
+ GET /admin 200 in 68ms (next.js: 13ms, application-code: 54ms)
+ GET /admin 200 in 557ms (next.js: 12ms, application-code: 544ms)
+ GET /admin/settings 200 in 1059ms (next.js: 1007ms, application-code: 53ms)
+ GET /admin/settings 200 in 117ms (next.js: 21ms, application-code: 96ms)
+ GET /admin/settings 200 in 52ms (next.js: 16ms, application-code: 36ms)
+ GET /admin/settings 200 in 42ms (next.js: 14ms, application-code: 28ms)
+ GET /admin/settings 200 in 48ms (next.js: 17ms, application-code: 31ms)
+ GET /admin/settings 200 in 39ms (next.js: 15ms, application-code: 25ms)
+ GET /admin/settings 200 in 47ms (next.js: 14ms, application-code: 33ms)
+ GET /admin/settings 200 in 106ms (next.js: 7ms, application-code: 98ms)
+[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
+    at Button (http://localhost:3000/_next/static/chunks/src_components_0-yrj8j._.js:841:214)
+    at ShopSettingsManager (http://localhost:3000/_next/static/chunks/_0kmszw8._.js:795:231)
+    at AdminSettingsPage (about://React/Server/D:%5CProject%5C2026_find_job%5Ccoffeeshop%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__13v7u7q._.js?9:25:263) 
+✓ Compiled in 114ms
+ GET /admin/settings 200 in 95ms (next.js: 21ms, application-code: 75ms)
+ GET /admin/settings 200 in 127ms (next.js: 65ms, application-code: 62ms)
+✓ Compiled in 753ms
+ GET /admin/settings 200 in 58ms (next.js: 17ms, application-code: 41ms)
+✓ Compiled in 136ms
+ GET /admin/settings 200 in 113ms (next.js: 27ms, application-code: 86ms)
+✓ Compiled in 91ms
+ GET /admin/settings 200 in 61ms (next.js: 19ms, application-code: 42ms)
+ GET /admin/settings 200 in 73ms (next.js: 6ms, application-code: 67ms)
+✓ Compiled in 199ms
+ GET /admin/settings 200 in 150ms (next.js: 55ms, application-code: 95ms)
+✓ Compiled in 119ms
+ GET /admin/settings 200 in 128ms (next.js: 22ms, application-code: 106ms)
+✓ Compiled in 98ms
+ GET /admin/settings 200 in 62ms (next.js: 17ms, application-code: 45ms)
+✓ Compiled in 92ms
+ GET /admin/settings 200 in 36ms (next.js: 9ms, application-code: 27ms)
+ GET /admin/settings 200 in 84ms (next.js: 13ms, application-code: 71ms)
+✓ Compiled in 119ms
+ GET /admin/settings 200 in 51ms (next.js: 20ms, application-code: 32ms)
+✓ Compiled in 110ms
+ GET /admin/settings 200 in 83ms (next.js: 28ms, application-code: 56ms)
+ GET /admin/settings 200 in 141ms (next.js: 15ms, application-code: 126ms)
+ GET /admin/settings 200 in 94ms (next.js: 10ms, application-code: 84ms)
+✓ Compiled in 89ms
+ GET /admin/settings 200 in 38ms (next.js: 12ms, application-code: 26ms)
+✓ Compiled in 93ms
+ GET /admin/settings 200 in 44ms (next.js: 15ms, application-code: 30ms)
+ GET /admin/settings 200 in 109ms (next.js: 11ms, application-code: 98ms)
+✓ Compiled in 310ms
+ GET /admin/settings 200 in 44ms (next.js: 11ms, application-code: 33ms)
+ GET /admin/settings 200 in 101ms (next.js: 9ms, application-code: 92ms)
+ GET /admin/settings 200 in 99ms (next.js: 9ms, application-code: 90ms)
+✓ Compiled in 140ms
+ GET /admin/settings 200 in 63ms (next.js: 20ms, application-code: 43ms)
+✓ Compiled in 378ms
+ GET /admin/settings 200 in 64ms (next.js: 13ms, application-code: 51ms)
+✓ Compiled in 156ms
+ GET /admin/settings 200 in 94ms (next.js: 39ms, application-code: 56ms)
+ GET /admin/settings 200 in 42ms (next.js: 11ms, application-code: 31ms)
+ GET /admin/settings 200 in 32ms (next.js: 8ms, application-code: 25ms)
+ GET /admin/settings 200 in 37ms (next.js: 7ms, application-code: 29ms)
+ GET /admin/settings 200 in 146ms (next.js: 15ms, application-code: 130ms)
+ GET /checkout 200 in 344ms (next.js: 74ms, application-code: 270ms)
+ GET /admin/settings 200 in 86ms (next.js: 6ms, application-code: 81ms)
+✓ Compiled in 106ms
+ GET /admin/settings 200 in 49ms (next.js: 15ms, application-code: 34ms)
+✓ Compiled in 95ms
+ GET /admin/settings 200 in 38ms (next.js: 10ms, application-code: 27ms)
+✓ Compiled in 89ms
+ GET /admin/settings 200 in 125ms (next.js: 24ms, application-code: 101ms)
+ GET /admin/settings 200 in 82ms (next.js: 5ms, application-code: 77ms)
+ GET /admin/settings 200 in 75ms (next.js: 18ms, application-code: 56ms)
+ GET /admin/settings 200 in 41ms (next.js: 12ms, application-code: 28ms)
+✓ Compiled in 276ms
+ GET /admin/settings 200 in 150ms (next.js: 41ms, application-code: 109ms)
+✓ Compiled in 129ms
+ GET /admin/settings 200 in 46ms (next.js: 12ms, application-code: 34ms)
+ GET /admin/settings 200 in 131ms (next.js: 17ms, application-code: 115ms)
+✓ Compiled in 617ms
+ GET /admin/settings 200 in 56ms (next.js: 16ms, application-code: 41ms)
+ GET /admin/settings 200 in 36ms (next.js: 10ms, application-code: 25ms)
+✓ Compiled in 254ms
+✓ Compiled in 171ms
+ GET /admin/settings 200 in 44ms (next.js: 12ms, application-code: 31ms)
+ GET /admin/settings 200 in 90ms (next.js: 8ms, application-code: 83ms)
+ GET / 200 in 228ms (next.js: 23ms, proxy.ts: 63ms, application-code: 142ms)
+✓ Compiled in 100ms
+ GET /admin/settings 200 in 53ms (next.js: 19ms, application-code: 34ms)
+ GET /admin/settings 200 in 90ms (next.js: 6ms, application-code: 84ms)
+ GET /admin/settings 200 in 81ms (next.js: 24ms, application-code: 57ms)
+✓ Compiled in 156ms
+ GET /admin/settings 200 in 74ms (next.js: 30ms, application-code: 44ms)
+ GET /admin/settings 200 in 83ms (next.js: 8ms, application-code: 75ms)
+ GET /admin/settings 200 in 140ms (next.js: 13ms, application-code: 128ms)
+ GET / 200 in 113ms (next.js: 9ms, proxy.ts: 4ms, application-code: 100ms)
+✓ Compiled in 159ms
+ GET /admin/settings 200 in 66ms (next.js: 15ms, application-code: 51ms)
+✓ Compiled in 157ms
+ GET /admin/settings 200 in 50ms (next.js: 14ms, application-code: 36ms)
+✓ Compiled in 153ms
+ GET /admin/settings 200 in 95ms (next.js: 11ms, application-code: 84ms)
+ GET /admin/settings 200 in 42ms (next.js: 12ms, application-code: 30ms)
+✓ Compiled in 1067ms
+ GET /admin/settings 200 in 124ms (next.js: 36ms, application-code: 88ms)
+✓ Compiled in 118ms
+ GET /admin/settings 200 in 70ms (next.js: 18ms, application-code: 51ms)
+✓ Compiled in 272ms
+ GET /admin/settings 200 in 84ms (next.js: 25ms, application-code: 60ms)
+ GET /admin 200 in 89ms (next.js: 18ms, application-code: 71ms)
+ GET /admin/kds 200 in 122ms (next.js: 83ms, application-code: 40ms)
+ GET /admin/menu 200 in 103ms (next.js: 59ms, application-code: 44ms)
+ GET /admin 200 in 97ms (next.js: 11ms, application-code: 86ms)
+ GET /admin/kds 200 in 64ms (next.js: 15ms, application-code: 49ms)
+ GET /admin/settings 200 in 164ms (next.js: 19ms, application-code: 145ms)
+ GET / 200 in 275ms (next.js: 18ms, proxy.ts: 4ms, application-code: 252ms)

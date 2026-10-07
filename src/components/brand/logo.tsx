@@ -1,8 +1,16 @@
+"use client"
+
 import Link from "next/link"
+import { useShopSettings } from "@/lib/shop-settings"
 import { cn } from "@/lib/utils"
 
 /** Café Botanica emblem (cup + coffee sprig in a rounded frame), redrawn as SVG from aura_coffee_roasters_logo. */
 export function LogoMark({ className }: { className?: string }) {
+  const { logoUrl } = useShopSettings()
+  if (logoUrl) {
+    // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-uploaded data URL, not a static asset
+    return <img src={logoUrl} alt="" className={cn("size-9 rounded-lg object-cover", className)} />
+  }
   return (
     <svg viewBox="0 0 48 48" fill="none" aria-hidden className={cn("size-9", className)}>
       <path
@@ -45,9 +53,7 @@ export function Logo({
     <Link href={href} className={cn("group flex items-center gap-2.5", className)}>
       <LogoMark className="transition-transform group-hover:scale-105" />
       <span className="flex flex-col leading-none">
-        <span className="font-serif text-headline-sm tracking-tight text-ink">
-          Aura <span className="max-sm:hidden">Coffee </span>Roasters
-        </span>
+        <span className="font-serif text-headline-sm tracking-tight text-ink">Free Shop Coffee</span>
         {subtitle ? <span className="mt-1 eyebrow">{subtitle}</span> : null}
       </span>
     </Link>
